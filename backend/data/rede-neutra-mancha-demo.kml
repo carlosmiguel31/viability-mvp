@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ARQUIVO DE DEMONSTRAÇÃO com dados fictícios. Substitua pelo KML real. -->
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Rede Neutra - Mancha (demonstracao)</name>
+    <Folder>
+      <name>AREA DE ATENDIMENTO</name>
+      <Placemark>
+        <name>BARREIRO</name>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>
+                -44.030,-19.995 -44.000,-19.995 -44.000,-19.975 -44.030,-19.975 -44.030,-19.995
+              </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+      <Placemark>
+        <name>CENTRO SUL</name>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>
+                -43.960,-19.950 -43.920,-19.950 -43.920,-19.920 -43.960,-19.920 -43.960,-19.950
+              </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>

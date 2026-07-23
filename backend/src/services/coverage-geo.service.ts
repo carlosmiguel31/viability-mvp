@@ -1,4 +1,7 @@
-import { coverageMemoryStore } from "../stores/coverage-memory.store";
+import {
+  coverageSnapshotStore,
+  CoverageSnapshotLayer,
+} from "../stores/coverage-snapshot.store";
 import {
   CoverageArea,
   CoveragePolygon,
@@ -104,13 +107,32 @@ export function isPointInArea(latitude: number, longitude: number, area: Coverag
   return area.polygons.some((polygon) => isPointInPolygon(latitude, longitude, polygon));
 }
 
+export interface CoverageLayerMatch {
+  layer: CoverageSnapshotLayer;
+  matchedAreas: CoverageArea[];
+}
+
 /**
- * Retorna TODAS as areas que contem o ponto (manchas podem se sobrepor),
- * preservando a ordem de leitura do KML. Regra explicita: a area principal
- * e a PRIMEIRA area valida nessa ordem; as demais sao sobreposicoes.
+ * Retorna TODAS as camadas do snapshot que contem o ponto — cada uma com as
+ * areas correspondentes. Camadas e areas podem se sobrepor; a ordem segue a
+ * ordem de carga do snapshot (createdAt da camada, ordem de leitura do KML
+ * dentro dela). A PRIMEIRA area do primeiro match e a area principal.
  */
+export function findCoverageLayerMatches(
+  latitude: number,
+  longitude: number
+): CoverageLayerMatch[] {
+  const matches: CoverageLayerMatch[] = [];
+  for (const layer of coverageSnapshotStore.getLayers()) {
+    const matchedAreas = layer.areas.filter((area) =>
+      isPointInArea(latitude, longitude, area)
+    );
+    if (matchedAreas.length > 0) matches.push({ layer, matchedAreas });
+  }
+  return matches;
+}
+
+/** Compat: todas as areas (de todas as camadas) que contem o ponto. */
 export function findCoverageAreasForPoint(latitude: number, longitude: number): CoverageArea[] {
-  return coverageMemoryStore
-    .getAreas()
-    .filter((area) => isPointInArea(latitude, longitude, area));
+  return findCoverageLayerMatches(latitude, longitude).flatMap((match) => match.matchedAreas);
 }

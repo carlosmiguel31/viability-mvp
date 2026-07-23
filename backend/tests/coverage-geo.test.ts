@@ -4,7 +4,7 @@ import {
   isPointInPolygon,
 } from "../src/services/coverage-geo.service";
 import { parseCoverageKml } from "../src/services/coverage-parser.service";
-import { coverageMemoryStore } from "../src/stores/coverage-memory.store";
+import { coverageSnapshotStore } from "../src/stores/coverage-snapshot.store";
 import {
   POINT_IN_ISLAND_2,
   POINT_IN_OVERLAP,
@@ -17,7 +17,17 @@ import {
 describe("point-in-polygon com o fixture de cobertura", () => {
   beforeAll(() => {
     const result = parseCoverageKml(readFixtureKml(), "KML");
-    coverageMemoryStore.replaceAll({ ...result, sourceFile: "manchas.kml" });
+    coverageSnapshotStore.replaceAll([
+      {
+        layerId: "legacy-file",
+        layerName: "manchas.kml",
+        partnerId: "legacy",
+        partnerName: "Arquivo local (legado)",
+        version: null,
+        areas: result.areas,
+        polygonCount: result.totalPolygons,
+      },
+    ]);
   });
 
   it("detecta ponto dentro do poligono", () => {

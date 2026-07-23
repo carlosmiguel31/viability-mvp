@@ -40,6 +40,10 @@ model User {
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
 
+  coveragePartnersCreated CoveragePartner[] @relation("CoveragePartnerCreatedBy")
+  coveragePartnersUpdated CoveragePartner[] @relation("CoveragePartnerUpdatedBy")
+  coverageLayersUploaded  CoverageLayer[]   @relation("CoverageLayerUploadedBy")
+
   @@map("users")
 }
 
@@ -80,4 +84,67 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+enum CoverageFileType {
+  KML
+  KMZ
+}
+
+enum CoverageProcessingStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+/// Parceiro/rede dona de camadas de cobertura (v0.3.0).
+model CoveragePartner {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  code        String   @unique
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?  @db.Uuid
+  updatedById String?  @db.Uuid
+
+  createdBy User? @relation("CoveragePartnerCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User? @relation("CoveragePartnerUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  layers CoverageLayer[]
+
+  @@map("coverage_partners")
+}
+
+/// Arquivo KML/KMZ importado de um parceiro. O binario fica em disco
+/// (COVERAGE_STORAGE_PATH) — NUNCA como blob no banco. storedFileName e
+/// interno e jamais exposto pela API.
+model CoverageLayer {
+  id                   String                   @id @default(uuid()) @db.Uuid
+  partnerId            String                   @db.Uuid
+  partner              CoveragePartner          @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  name                 String
+  description          String?
+  version              String?
+  originalFileName     String
+  storedFileName       String                   @unique
+  fileType             CoverageFileType
+  fileSize             Int
+  sha256               String                   @unique
+  active               Boolean                  @default(true)
+  processingStatus     CoverageProcessingStatus @default(PENDING)
+  polygonCount         Int                      @default(0)
+  areaCount            Int                      @default(0)
+  ignoredGeometryCount Int                      @default(0)
+  processingError      String?
+  uploadedById         String?                  @db.Uuid
+  uploadedBy           User?                    @relation("CoverageLayerUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+
+  @@index([partnerId])
+  @@index([active, processingStatus])
+  @@map("coverage_layers")
 }

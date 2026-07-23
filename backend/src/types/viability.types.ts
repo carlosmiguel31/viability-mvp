@@ -41,10 +41,19 @@ export interface NetworkLocation {
  * poligono → PRELIMINARILY_VIABLE; fora de todos → OUTSIDE_COVERAGE.
  * Os demais status cobrem cobertura nao carregada e falhas de geocodificacao.
  */
+export interface CoverageMatch {
+  partnerId: string;
+  partnerName: string;
+  layerId: string;
+  layerName: string;
+  version: string | null;
+}
+
 export type ViabilityStatus =
   | "PRELIMINARILY_VIABLE"
   | "OUTSIDE_COVERAGE"
   | "COVERAGE_NOT_LOADED"
+  | "COVERAGE_NOT_CONFIGURED"
   | "ADDRESS_NOT_FOUND"
   | "ADDRESS_AMBIGUOUS"
   | "GEOCODING_UNAVAILABLE";
@@ -71,6 +80,12 @@ export interface CoverageAreaSummary {
 export interface ViabilityResponse {
   status: ViabilityStatus;
   message: string;
+  /**
+   * Camadas de cobertura (parceiro + camada + versao) que contem o ponto.
+   * coverageMatches.length > 0 <=> PRELIMINARILY_VIABLE. Sem duplicacoes;
+   * o poligono completo NUNCA e exposto aqui.
+   */
+  coverageMatches: CoverageMatch[];
   /** Situacao da busca de referencia de rede no Voalle (complementar). */
   networkReferenceStatus: NetworkReferenceStatus;
   /** Mensagem complementar sobre a referencia de rede, quando aplicavel. */
@@ -125,6 +140,8 @@ export interface SearchedAddress {
 export interface AddressViabilityResponse {
   status: ViabilityStatus;
   message: string;
+  /** Camadas (parceiro + camada + versao) que cobrem o endereco. */
+  coverageMatches: CoverageMatch[];
   networkReferenceStatus: NetworkReferenceStatus;
   networkReferenceMessage: string | null;
   searchedAddress: SearchedAddress;

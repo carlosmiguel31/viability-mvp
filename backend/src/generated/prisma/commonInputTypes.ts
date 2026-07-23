@@ -270,6 +270,67 @@ export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonNullableFilter<$PrismaModel>
 }
 
+export type EnumCoverageFileTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageFileType | Prisma.EnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageFileTypeFilter<$PrismaModel> | $Enums.CoverageFileType
+}
+
+export type IntFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntFilter<$PrismaModel> | number
+}
+
+export type EnumCoverageProcessingStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageProcessingStatus | Prisma.EnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageProcessingStatusFilter<$PrismaModel> | $Enums.CoverageProcessingStatus
+}
+
+export type EnumCoverageFileTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageFileType | Prisma.EnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageFileTypeWithAggregatesFilter<$PrismaModel> | $Enums.CoverageFileType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCoverageFileTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCoverageFileTypeFilter<$PrismaModel>
+}
+
+export type IntWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedIntFilter<$PrismaModel>
+  _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
+export type EnumCoverageProcessingStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageProcessingStatus | Prisma.EnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageProcessingStatusWithAggregatesFilter<$PrismaModel> | $Enums.CoverageProcessingStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCoverageProcessingStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCoverageProcessingStatusFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -506,6 +567,67 @@ export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumCoverageFileTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageFileType | Prisma.EnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageFileTypeFilter<$PrismaModel> | $Enums.CoverageFileType
+}
+
+export type NestedEnumCoverageProcessingStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageProcessingStatus | Prisma.EnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageProcessingStatusFilter<$PrismaModel> | $Enums.CoverageProcessingStatus
+}
+
+export type NestedEnumCoverageFileTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageFileType | Prisma.EnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageFileType[] | Prisma.ListEnumCoverageFileTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageFileTypeWithAggregatesFilter<$PrismaModel> | $Enums.CoverageFileType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCoverageFileTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCoverageFileTypeFilter<$PrismaModel>
+}
+
+export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedIntFilter<$PrismaModel>
+  _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
+export type NestedFloatFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type NestedEnumCoverageProcessingStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CoverageProcessingStatus | Prisma.EnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CoverageProcessingStatus[] | Prisma.ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCoverageProcessingStatusWithAggregatesFilter<$PrismaModel> | $Enums.CoverageProcessingStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCoverageProcessingStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCoverageProcessingStatusFilter<$PrismaModel>
 }
 
 

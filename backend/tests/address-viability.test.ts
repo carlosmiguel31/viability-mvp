@@ -7,7 +7,7 @@ import {
   AddressNotFoundError,
   GeocodingUnavailableError,
 } from "../src/services/geocoding/geocoding.errors";
-import { coverageMemoryStore } from "../src/stores/coverage-memory.store";
+import { coverageSnapshotStore } from "../src/stores/coverage-snapshot.store";
 import { parseCoverageKml } from "../src/services/coverage-parser.service";
 import { GeocodingProvider, GeocodingResult } from "../src/types/address.types";
 import { VoalleRepository } from "../src/repositories/voalle.repository";
@@ -32,7 +32,17 @@ const address = normalizeAddressInput({
 
 function loadCoverage(): void {
   const result = parseCoverageKml(readFixtureKml(), "KML");
-  coverageMemoryStore.replaceAll({ ...result, sourceFile: "manchas.kml" });
+  coverageSnapshotStore.replaceAll([
+      {
+        layerId: "legacy-file",
+        layerName: "manchas.kml",
+        partnerId: "legacy",
+        partnerName: "Arquivo local (legado)",
+        version: null,
+        areas: result.areas,
+        polygonCount: result.totalPolygons,
+      },
+    ]);
 }
 
 function geocoderReturning(result: Partial<GeocodingResult>): GeocodingProvider & {

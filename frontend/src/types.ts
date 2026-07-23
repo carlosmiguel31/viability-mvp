@@ -3,9 +3,19 @@ export type ViabilityStatus =
   | "PRELIMINARILY_VIABLE"
   | "OUTSIDE_COVERAGE"
   | "COVERAGE_NOT_LOADED"
+  | "COVERAGE_NOT_CONFIGURED"
   | "ADDRESS_NOT_FOUND"
   | "ADDRESS_AMBIGUOUS"
   | "GEOCODING_UNAVAILABLE";
+
+/** Parceiro + camada + versão que cobrem o ponto (deduplicado no backend). */
+export interface CoverageMatch {
+  partnerId: string;
+  partnerName: string;
+  layerId: string;
+  layerName: string;
+  version: string | null;
+}
 
 /** Referência de rede (Voalle) — complementar, nunca altera a viabilidade. */
 export type NetworkReferenceStatus = "FOUND" | "NOT_FOUND" | "VOALLE_UNAVAILABLE" | "NOT_CHECKED";
@@ -77,6 +87,7 @@ export interface SearchedAddress {
 export interface AddressViabilityResponse {
   status: ViabilityStatus;
   message: string;
+  coverageMatches: CoverageMatch[];
   networkReferenceStatus: NetworkReferenceStatus;
   networkReferenceMessage: string | null;
   searchedAddress: SearchedAddress;
@@ -97,14 +108,74 @@ export interface AddressViabilityResponse {
 }
 
 export interface CoverageStatus {
-  loaded: boolean;
-  loadedAt: string | null;
-  sourceFile: string | null;
+  configured: boolean;
+  builtAt: string | null;
+  totalPartners: number;
+  totalLayers: number;
   totalAreas: number;
   totalPolygons: number;
-  ignoredPoints: number;
-  ignoredLines: number;
-  rejectedGeometries: number;
+  /** Compatibilidade com o formato anterior. */
+  loaded: boolean;
+  sourceFile: string | null;
+}
+
+// ── Administração de coberturas (v0.3.0) ─────────────────────
+export type CoverageProcessingStatus = "PENDING" | "PROCESSING" | "READY" | "FAILED";
+
+export type CoverageFileType = "KML" | "KMZ";
+
+export interface CoveragePartner {
+  id: string;
+  name: string;
+  code: string;
+  description: string | null;
+  active: boolean;
+  layerCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CoveragePartnersPage {
+  partners: CoveragePartner[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface CoverageLayer {
+  id: string;
+  partner: { id: string; name: string; code: string };
+  name: string;
+  description: string | null;
+  version: string | null;
+  originalFileName: string;
+  fileType: CoverageFileType;
+  fileSize: number;
+  sha256: string;
+  active: boolean;
+  processingStatus: CoverageProcessingStatus;
+  polygonCount: number;
+  areaCount: number;
+  ignoredGeometryCount: number;
+  processingError: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CoverageLayersPage {
+  layers: CoverageLayer[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface CoverageReloadSummary {
+  reloaded: boolean;
+  totalPartners: number;
+  totalLayers: number;
+  totalAreas: number;
+  totalPolygons: number;
+  durationMs?: number;
 }
 
 // ── Autenticação e administração (v0.2.0) ────────────────────

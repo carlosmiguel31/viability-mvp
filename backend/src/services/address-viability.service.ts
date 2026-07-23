@@ -111,6 +111,7 @@ export async function checkViabilityByAddress(
       return {
         status,
         message: ADDRESS_MESSAGES[status],
+        coverageMatches: [],
         networkReferenceStatus: "NOT_CHECKED",
         networkReferenceMessage: null,
         searchedAddress: baseSearched,
@@ -130,6 +131,7 @@ export async function checkViabilityByAddress(
       return {
         status: "ADDRESS_AMBIGUOUS",
         message: ADDRESS_MESSAGES.ADDRESS_AMBIGUOUS,
+        coverageMatches: [],
         networkReferenceStatus: "NOT_CHECKED",
         networkReferenceMessage: null,
         searchedAddress: {
@@ -168,6 +170,7 @@ export async function checkViabilityByAddress(
   return {
     status: geographic.status,
     message: geographic.message,
+    coverageMatches: geographic.coverageMatches,
     networkReferenceStatus: geographic.networkReferenceStatus,
     networkReferenceMessage: geographic.networkReferenceMessage,
     searchedAddress,

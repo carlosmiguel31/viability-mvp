@@ -11,4 +11,6 @@
 export type * from './models/User'
 export type * from './models/RefreshToken'
 export type * from './models/AuditLog'
+export type * from './models/CoveragePartner'
+export type * from './models/CoverageLayer'
 export type * from './commonInputTypes'

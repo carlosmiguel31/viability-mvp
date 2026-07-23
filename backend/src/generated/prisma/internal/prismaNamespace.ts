@@ -399,7 +399,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  CoveragePartner: 'CoveragePartner',
+  CoverageLayer: 'CoverageLayer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -415,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "auditLog"
+    modelProps: "user" | "refreshToken" | "auditLog" | "coveragePartner" | "coverageLayer"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -641,6 +643,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CoveragePartner: {
+      payload: Prisma.$CoveragePartnerPayload<ExtArgs>
+      fields: Prisma.CoveragePartnerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CoveragePartnerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CoveragePartnerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>
+        }
+        findFirst: {
+          args: Prisma.CoveragePartnerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CoveragePartnerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>
+        }
+        findMany: {
+          args: Prisma.CoveragePartnerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>[]
+        }
+        create: {
+          args: Prisma.CoveragePartnerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>
+        }
+        createMany: {
+          args: Prisma.CoveragePartnerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CoveragePartnerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>[]
+        }
+        delete: {
+          args: Prisma.CoveragePartnerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>
+        }
+        update: {
+          args: Prisma.CoveragePartnerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>
+        }
+        deleteMany: {
+          args: Prisma.CoveragePartnerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CoveragePartnerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CoveragePartnerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>[]
+        }
+        upsert: {
+          args: Prisma.CoveragePartnerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoveragePartnerPayload>
+        }
+        aggregate: {
+          args: Prisma.CoveragePartnerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCoveragePartner>
+        }
+        groupBy: {
+          args: Prisma.CoveragePartnerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CoveragePartnerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CoveragePartnerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CoveragePartnerCountAggregateOutputType> | number
+        }
+      }
+    }
+    CoverageLayer: {
+      payload: Prisma.$CoverageLayerPayload<ExtArgs>
+      fields: Prisma.CoverageLayerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CoverageLayerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CoverageLayerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>
+        }
+        findFirst: {
+          args: Prisma.CoverageLayerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CoverageLayerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>
+        }
+        findMany: {
+          args: Prisma.CoverageLayerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>[]
+        }
+        create: {
+          args: Prisma.CoverageLayerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>
+        }
+        createMany: {
+          args: Prisma.CoverageLayerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CoverageLayerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>[]
+        }
+        delete: {
+          args: Prisma.CoverageLayerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>
+        }
+        update: {
+          args: Prisma.CoverageLayerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>
+        }
+        deleteMany: {
+          args: Prisma.CoverageLayerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CoverageLayerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CoverageLayerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>[]
+        }
+        upsert: {
+          args: Prisma.CoverageLayerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CoverageLayerPayload>
+        }
+        aggregate: {
+          args: Prisma.CoverageLayerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCoverageLayer>
+        }
+        groupBy: {
+          args: Prisma.CoverageLayerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CoverageLayerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CoverageLayerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CoverageLayerCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -723,6 +873,46 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const CoveragePartnerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
+} as const
+
+export type CoveragePartnerScalarFieldEnum = (typeof CoveragePartnerScalarFieldEnum)[keyof typeof CoveragePartnerScalarFieldEnum]
+
+
+export const CoverageLayerScalarFieldEnum = {
+  id: 'id',
+  partnerId: 'partnerId',
+  name: 'name',
+  description: 'description',
+  version: 'version',
+  originalFileName: 'originalFileName',
+  storedFileName: 'storedFileName',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  sha256: 'sha256',
+  active: 'active',
+  processingStatus: 'processingStatus',
+  polygonCount: 'polygonCount',
+  areaCount: 'areaCount',
+  ignoredGeometryCount: 'ignoredGeometryCount',
+  processingError: 'processingError',
+  uploadedById: 'uploadedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CoverageLayerScalarFieldEnum = (typeof CoverageLayerScalarFieldEnum)[keyof typeof CoverageLayerScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -836,6 +1026,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'CoverageFileType'
+ */
+export type EnumCoverageFileTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CoverageFileType'>
+    
+
+
+/**
+ * Reference to a field of type 'CoverageFileType[]'
+ */
+export type ListEnumCoverageFileTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CoverageFileType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -846,6 +1050,34 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CoverageProcessingStatus'
+ */
+export type EnumCoverageProcessingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CoverageProcessingStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CoverageProcessingStatus[]'
+ */
+export type ListEnumCoverageProcessingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CoverageProcessingStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1002,6 +1234,8 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   refreshToken?: Prisma.RefreshTokenOmit
   auditLog?: Prisma.AuditLogOmit
+  coveragePartner?: Prisma.CoveragePartnerOmit
+  coverageLayer?: Prisma.CoverageLayerOmit
 }
 
 /* Types for Logging */

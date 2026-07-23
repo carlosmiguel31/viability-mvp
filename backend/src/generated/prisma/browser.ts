@@ -34,3 +34,15 @@ export type RefreshToken = Prisma.RefreshTokenModel
  * Voalle ou o conteúdo completo de endereços consultados.
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model CoveragePartner
+ * Parceiro/rede dona de camadas de cobertura (v0.3.0).
+ */
+export type CoveragePartner = Prisma.CoveragePartnerModel
+/**
+ * Model CoverageLayer
+ * Arquivo KML/KMZ importado de um parceiro. O binario fica em disco
+ * (COVERAGE_STORAGE_PATH) — NUNCA como blob no banco. storedFileName e
+ * interno e jamais exposto pela API.
+ */
+export type CoverageLayer = Prisma.CoverageLayerModel

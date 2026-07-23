@@ -26,6 +26,11 @@ const STATUS_META: Record<string, { label: string; badge: string; panel: string 
     badge: "bg-signal-offline text-white",
     panel: "border-signal-offline/40",
   },
+  COVERAGE_NOT_CONFIGURED: {
+    label: "Cobertura não configurada",
+    badge: "bg-signal-offline text-white",
+    panel: "border-signal-offline/40",
+  },
   ADDRESS_NOT_FOUND: {
     label: "Endereço não localizado",
     badge: "bg-signal-analysis text-white",
@@ -114,6 +119,25 @@ export default function ResultPanel({ result }: Props) {
             {CONFIDENCE_LABEL[searchedAddress.geocodingConfidence]}
           </p>
         )
+      )}
+
+      {result.status === "PRELIMINARILY_VIABLE" && result.coverageMatches.length > 0 && (
+        <div className="mt-3">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/50">
+            Coberturas encontradas
+          </p>
+          <ul className="space-y-1 rounded border border-ink/10 bg-ink/[0.02] p-2">
+            {result.coverageMatches.map((match) => (
+              <li key={match.layerId} className="text-xs text-ink/80">
+                <span className="font-semibold">{match.partnerName}</span>
+                <span className="block text-ink/60">
+                  {match.layerName}
+                  {match.version ? ` · versão ${match.version}` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {coverage.matchingAreas.length > 0 && (

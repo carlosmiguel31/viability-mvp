@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app";
-import { coverageMemoryStore } from "../src/stores/coverage-memory.store";
+import { coverageSnapshotStore } from "../src/stores/coverage-snapshot.store";
 import { parseCoverageKml } from "../src/services/coverage-parser.service";
 import { checkViability } from "../src/services/viability.service";
 import { VoalleRepository } from "../src/repositories/voalle.repository";
@@ -21,7 +21,17 @@ const app = createApp();
 
 function loadCoverage(): void {
   const result = parseCoverageKml(readFixtureKml(), "KML");
-  coverageMemoryStore.replaceAll({ ...result, sourceFile: "manchas.kml" });
+  coverageSnapshotStore.replaceAll([
+      {
+        layerId: "legacy-file",
+        layerName: "manchas.kml",
+        partnerId: "legacy",
+        partnerName: "Arquivo local (legado)",
+        version: null,
+        areas: result.areas,
+        polygonCount: result.totalPolygons,
+      },
+    ]);
 }
 
 function fakeElement(id: string, title: string, latitude: number, longitude: number): VoalleNetworkElement {
@@ -55,7 +65,7 @@ describe("POST /api/viabilities/check-coordinates (HTTP, ferramenta de desenvolv
     operatorToken = (await loginAs(app, operator.email)).accessToken;
   });
   afterAll(resetAppDatabase);
-  beforeEach(() => coverageMemoryStore.clear());
+  beforeEach(() => coverageSnapshotStore.clear());
 
   it("sem autenticacao retorna 401", async () => {
     const res = await request(app)
@@ -73,13 +83,13 @@ describe("POST /api/viabilities/check-coordinates (HTTP, ferramenta de desenvolv
     expect(res.status).toBe(403);
   });
 
-  it("com ADMIN retorna COVERAGE_NOT_LOADED quando as manchas nao foram carregadas", async () => {
+  it("com ADMIN retorna COVERAGE_NOT_CONFIGURED quando nenhuma camada esta carregada", async () => {
     const res = await request(app)
       .post("/api/viabilities/check-coordinates")
       .set("Authorization", `Bearer ${adminToken}`)
       .send(POINT_INSIDE_BARREIRO);
     expect(res.status).toBe(200);
-    expect(res.body.status).toBe("COVERAGE_NOT_LOADED");
+    expect(res.body.status).toBe("COVERAGE_NOT_CONFIGURED");
   });
 
   it("valida o body e rejeita coordenadas invalidas", async () => {

@@ -53,7 +53,9 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  CoveragePartner: 'CoveragePartner',
+  CoverageLayer: 'CoverageLayer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -115,6 +117,46 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const CoveragePartnerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
+} as const
+
+export type CoveragePartnerScalarFieldEnum = (typeof CoveragePartnerScalarFieldEnum)[keyof typeof CoveragePartnerScalarFieldEnum]
+
+
+export const CoverageLayerScalarFieldEnum = {
+  id: 'id',
+  partnerId: 'partnerId',
+  name: 'name',
+  description: 'description',
+  version: 'version',
+  originalFileName: 'originalFileName',
+  storedFileName: 'storedFileName',
+  fileType: 'fileType',
+  fileSize: 'fileSize',
+  sha256: 'sha256',
+  active: 'active',
+  processingStatus: 'processingStatus',
+  polygonCount: 'polygonCount',
+  areaCount: 'areaCount',
+  ignoredGeometryCount: 'ignoredGeometryCount',
+  processingError: 'processingError',
+  uploadedById: 'uploadedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CoverageLayerScalarFieldEnum = (typeof CoverageLayerScalarFieldEnum)[keyof typeof CoverageLayerScalarFieldEnum]
 
 
 export const SortOrder = {

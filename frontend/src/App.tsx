@@ -1,21 +1,33 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LoginPage from "./components/LoginPage";
 import ConsultaPage from "./components/ConsultaPage";
 import UsersPage from "./components/UsersPage";
 import ChangePasswordForm from "./components/ChangePasswordForm";
 import AuditPage from "./components/AuditPage";
+import CoverageAdminPage from "./components/CoverageAdminPage";
 import { logout, onSessionChange, restoreSession, SessionUser } from "./auth";
 import { fetchCoverageStatus } from "./api";
 import { CoverageStatus, ROLE_LABELS } from "./types";
 
-type View = "consulta" | "usuarios" | "auditoria" | "senha";
+type View = "consulta" | "coberturas" | "usuarios" | "auditoria" | "senha";
 
 const MENU: Array<{ view: View; label: string; adminOnly: boolean }> = [
   { view: "consulta", label: "Nova consulta", adminOnly: false },
+  { view: "coberturas", label: "Coberturas", adminOnly: true },
   { view: "usuarios", label: "Usuários", adminOnly: true },
   { view: "auditoria", label: "Auditoria", adminOnly: true },
   { view: "senha", label: "Alterar minha senha", adminOnly: false },
 ];
+
+/** Texto do cabeçalho a partir do status v0.3.0 (múltiplas camadas). */
+export function coverageHeaderText(coverage: CoverageStatus | null): string {
+  if (coverage === null) return "Status da cobertura indisponível";
+  if (!coverage.configured) return "Nenhuma cobertura configurada";
+  return (
+    `${coverage.totalPartners} parceiro(s) · ${coverage.totalLayers} camada(s) · ` +
+    `${coverage.totalAreas} área(s) · ${coverage.totalPolygons} polígono(s)`
+  );
+}
 
 export default function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
@@ -31,14 +43,22 @@ export default function App() {
     restoreSession().finally(() => setRestoring(false));
   }, []);
 
+  const refreshCoverageStatus = useCallback(async () => {
+    try {
+      setCoverage(await fetchCoverageStatus());
+    } catch {
+      setCoverage(null);
+    }
+  }, []);
+
   useEffect(() => {
     if (!user) {
       setView("consulta");
       setCoverage(null);
       return;
     }
-    fetchCoverageStatus().then(setCoverage).catch(() => setCoverage(null));
-  }, [user]);
+    void refreshCoverageStatus();
+  }, [user, refreshCoverageStatus]);
 
   if (restoring) {
     return (
@@ -66,11 +86,7 @@ export default function App() {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right font-mono text-[11px] text-white/70">
-              {coverage === null
-                ? "status da cobertura indisponível"
-                : coverage.loaded
-                  ? `${coverage.totalAreas} área(s) · ${coverage.totalPolygons} polígono(s) · ${coverage.sourceFile}`
-                  : "manchas ainda não carregadas"}
+              {coverageHeaderText(coverage)}
             </div>
             <div className="text-right text-xs">
               <p className="font-medium text-white">{user.name}</p>
@@ -113,6 +129,9 @@ export default function App() {
         <main className="min-w-0 flex-1">
           {view === "consulta" && <ConsultaPage />}
           {view === "senha" && <ChangePasswordForm />}
+          {view === "coberturas" && user.role === "ADMIN" && (
+            <CoverageAdminPage onCoverageChanged={refreshCoverageStatus} />
+          )}
           {view === "usuarios" && user.role === "ADMIN" && <UsersPage currentUser={user} />}
           {view === "auditoria" && user.role === "ADMIN" && <AuditPage />}
         </main>

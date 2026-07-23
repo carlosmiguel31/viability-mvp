@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import { checkViability } from "../src/services/viability.service";
 import { parseCoverageKml } from "../src/services/coverage-parser.service";
-import { coverageMemoryStore } from "../src/stores/coverage-memory.store";
+import { coverageSnapshotStore } from "../src/stores/coverage-snapshot.store";
 import { VoalleRepository } from "../src/repositories/voalle.repository";
 
 /**
@@ -38,7 +38,17 @@ function repoWith(elements: never[]): VoalleRepository & { spy: ReturnType<typeo
 describe("áreas com nomes como IMPLANTAR", () => {
   beforeEach(() => {
     const result = parseCoverageKml(IMPLANTAR_KML, "KML");
-    coverageMemoryStore.replaceAll({ ...result, sourceFile: "implantar.kml" });
+    coverageSnapshotStore.replaceAll([
+      {
+        layerId: "legacy-file",
+        layerName: "implantar.kml",
+        partnerId: "legacy",
+        partnerName: "Arquivo local (legado)",
+        version: null,
+        areas: result.areas,
+        polygonCount: result.totalPolygons,
+      },
+    ]);
   });
 
   it("endereço dentro de 'IMPLANTAR - POP VTA' retorna PRELIMINARILY_VIABLE mesmo sem ponto no Voalle", async () => {

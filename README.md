@@ -267,31 +267,125 @@ a senha, não registra a senha no terminal e falha se a senha não cumprir a
 política (mínimo 8 caracteres com maiúscula, minúscula e número).
 **A senha inicial deve ser alterada após o primeiro acesso.**
 
-## Como substituir o arquivo KML
+## Camadas de cobertura por parceiro (v0.3.0)
 
-1. Coloque o arquivo em `backend/data/` (ou outro caminho). Aceita `.kml`
-   direto ou `.kmz`.
-2. Aponte no `.env`:
+A cobertura deixou de ser um arquivo único definido em
+`NETWORK_COVERAGE_PATH` e passou a ser administrada como **parceiros**
+(`CoveragePartner`) e **camadas** (`CoverageLayer`), cada camada com seu
+próprio arquivo KML/KMZ, versão e status de ativação.
 
-```env
-NETWORK_COVERAGE_PATH=./data/Rede Neutra - Mancha.kml
+### Armazenamento dos arquivos
+
+- Os arquivos importados ficam em `COVERAGE_STORAGE_PATH`
+  (padrão `./storage/coverage`), criado automaticamente e **nunca**
+  publicado como conteúdo estático.
+- O nome enviado pelo usuário jamais vira caminho: cada arquivo recebe um
+  nome interno aleatório (`uuid.kml`/`uuid.kmz`), o que impede path
+  traversal e sobrescrita. Nomes internos nunca são expostos pela API.
+- Aceitos apenas `.kml` e `.kmz`, com validação de extensão e conteúdo,
+  SHA-256 calculado, rejeição de arquivo vazio e limite de
+  `COVERAGE_MAX_FILE_SIZE_MB` (padrão 25 MB). As proteções contra KMZ
+  excessivo/zip bomb da v0.2.x continuam valendo.
+- O conteúdo binário **não** é armazenado no PostgreSQL.
+
+### Processamento e ativação
+
+Cada camada passa por `PENDING → PROCESSING → READY` (ou `FAILED`, com
+mensagem segura e sem stack trace). Elementos ignorados: `Point` e
+`LineString` não são áreas de cobertura e apenas entram na contagem
+`ignoredGeometryCount`; um arquivo **sem nenhum polígono válido** é marcado
+como `FAILED`.
+
+Entram no índice de consulta (snapshot em memória) somente camadas com
+`active = true`, `processingStatus = READY` **e parceiro ativo**. Criar,
+ativar, inativar ou excluir camadas — e ativar/inativar parceiros —
+reconstrói o snapshot de forma **atômica e serializada**: o novo índice é
+montado à parte e só substitui o atual após sucesso; em falha, o snapshot
+anterior continua atendendo as consultas, sem intervalo sem cobertura.
+
+### Camadas sobrepostas
+
+Quando o ponto consultado está dentro de polígonos de mais de uma camada
+(ou parceiro), a resposta lista **todos** os matches em `coverageMatches`,
+sem duplicações. A regra de viabilidade não muda:
+`coverageMatches.length > 0` ⇒ `PRELIMINARILY_VIABLE`; fora de todos os
+polígonos ativos ⇒ `OUTSIDE_COVERAGE`. Sem nenhuma camada ativa cadastrada,
+a consulta responde `COVERAGE_NOT_CONFIGURED` (nunca "fora da cobertura"
+silencioso). O Voalle continua meramente complementar.
+
+### Importação por linha de comando
+
+```bash
+cd backend
+npm run coverage:import -- --file "./data/rede-neutra-real.kml" \
+  --partner "Rede Neutra" --code "REDE_NEUTRA" --layer "Cobertura inicial" \
+  --version "2026-07"
 ```
 
-   > O arquivo real de cobertura pode conter informações operacionais e não
-   > deve ser versionado ou distribuído publicamente. O `.gitignore` do
-   > backend ignora `data/*.kml` e `data/*.kmz`, liberando apenas o arquivo
-   > de demonstração `rede-neutra-mancha-demo.kml`.
+O comando cria ou localiza o parceiro pelo `code`, importa o arquivo com as
+mesmas validações do upload, mostra as estatísticas e **recusa duplicidade
+pelo SHA-256** com erro claro. A importação nunca roda automaticamente na
+inicialização.
 
-3. Reinicie o backend ou chame `POST /api/coverage/reload` autenticado como
-   **ADMIN** (a ação é auditada). A recarga é atômica: se o novo arquivo for
-   inválido, os dados anteriores permanecem.
+### Compatibilidade com `NETWORK_COVERAGE_PATH` (legado/depreciado)
 
-> **Atenção:** o arquivo incluído no repositório contém apenas dados fictícios
-> para demonstração. Substitua-o pelo KML real antes de utilizar o sistema.
+A variável continua existindo apenas como referência de migração: o backend
+**não** importa o arquivo automaticamente. Se não houver camada cadastrada e
+a variável estiver definida, um aviso no log indica o comando
+`coverage:import` exato para migrar. O arquivo real de cobertura pode conter
+informações operacionais e não deve ser versionado (o `.gitignore` ignora
+`data/*.kml`/`data/*.kmz`, liberando apenas o demo).
 
-Elementos ignorados na carga: `Point` e `LineString` não são áreas de
-cobertura e apenas entram no resumo (`ignoredPoints`, `ignoredLines`);
-polígonos com anel inválido entram em `rejectedGeometries`.
+### Tela de administração (frontend)
+
+O menu **Coberturas** (exclusivo de ADMIN) abre a administração com duas
+abas:
+
+- **Parceiros** — busca, filtro Todos/Ativos/Inativos, paginação (20 por
+  página), criação e edição em modal (código em fonte monoespaçada, gravado
+  em maiúsculas pelo backend) e ativação/inativação com confirmação
+  explícita de que as camadas do parceiro deixarão de participar das
+  consultas.
+- **Camadas** — busca, filtros por parceiro, status ativo, processamento e
+  tipo; tabela com arquivo original, tamanho legível (B/KB/MB), versão,
+  badge de processamento (Aguardando processamento / Processando / Pronta /
+  Falhou — com o motivo da falha em detalhes expansíveis), áreas, polígonos
+  e ações. Upload de KML/KMZ em modal com validações locais (parceiro, nome
+  e arquivo obrigatórios; apenas `.kml`/`.kmz`; não vazio; até 25 MB) além
+  das validações do backend; durante o envio o formulário fica desabilitado
+  com "Enviando e processando…". A edição altera somente nome, descrição e
+  versão — arquivo e parceiro não são substituíveis (envie uma nova camada).
+  A exclusão é definitiva, confirmada com nome, parceiro e arquivo. O botão
+  "Recarregar coberturas" reconstrói o snapshot sob confirmação e mostra o
+  resumo (parceiros, camadas, áreas, polígonos e duração).
+
+O cabeçalho resume o snapshot ("2 parceiro(s) · 4 camada(s) · …"), mostra
+"Nenhuma cobertura configurada" quando `configured = false` e "Status da
+cobertura indisponível" quando a requisição falha; toda operação
+administrativa atualiza esse status sem recarregar a página. No resultado da
+consulta, a seção **"Coberturas encontradas"** lista parceiro, camada e
+versão de cada match (sem IDs internos), e o status
+`COVERAGE_NOT_CONFIGURED` tem apresentação própria ("Cobertura não
+configurada") com a mensagem enviada pelo backend.
+
+### Permissões
+
+| Perfil | Parceiros/Camadas |
+| --- | --- |
+| `ADMIN` | leitura e gerenciamento completos (criar, editar, ativar/inativar, upload, excluir) |
+| `OPERATOR`, `TECHNICIAN`, `VIEWER` | apenas lista básica de parceiros e camadas **ativas** (sem caminhos internos, sem upload, sem ativação/exclusão) |
+
+Nenhum perfil recebe `storedFileName`, caminho físico, stack trace ou
+detalhes internos de armazenamento.
+
+### Códigos de erro da cobertura
+
+`COVERAGE_PARTNER_NOT_FOUND`, `COVERAGE_PARTNER_CODE_IN_USE`,
+`COVERAGE_LAYER_NOT_FOUND`, `COVERAGE_FILE_INVALID`,
+`COVERAGE_FILE_TOO_LARGE`, `COVERAGE_FILE_DUPLICATE`,
+`COVERAGE_PROCESSING_FAILED`, `COVERAGE_LAYER_PROCESSING`,
+`COVERAGE_NOT_CONFIGURED`, `COVERAGE_SNAPSHOT_REBUILD_FAILED` — todos no
+padrão de erro `{ "error": { "code", "message" } }` do projeto.
 
 ## Testes
 
@@ -364,9 +458,20 @@ Veja `backend/.env.example`. Resumo:
 | POST | `/api/viabilities/confirm-location` | JWT (qualquer perfil) + rate limit | Confirmação/ajuste do marcador (mesmo contrato do check com `adjustedLocation`) |
 | POST | `/api/viabilities/check-coordinates` | dev: JWT · fora de dev: ADMIN | Ferramenta de desenvolvimento (coordenadas diretas) |
 | GET | `/api/addresses/postal-code/:cep` | JWT + rate limit | Preenchimento pelo CEP (ViaCEP) |
-| GET | `/api/coverage/status` | JWT | Resumo da carga das manchas (sem coordenadas) |
-| GET | `/api/coverage/areas` | JWT | Polígonos para o mapa |
-| POST | `/api/coverage/reload` | JWT + perfil ADMIN + rate limit | Recarrega o arquivo (auditado) |
+| GET | `/api/coverage/status` | JWT | Resumo do snapshot de cobertura (parceiros, camadas, polígonos) |
+| GET | `/api/coverage/areas` | JWT | Polígonos das camadas ativas para o mapa |
+| POST | `/api/coverage/reload` | JWT + perfil ADMIN + rate limit | Reconstrói o snapshot a partir do banco (auditado) |
+| POST | `/api/coverage/partners` | JWT + ADMIN | Cria parceiro (`code` único) |
+| GET | `/api/coverage/partners` | JWT | Lista parceiros (`search`, `active`, `page`, `limit`; não-admin vê só ativos) |
+| GET | `/api/coverage/partners/:id` | JWT + ADMIN | Detalhe do parceiro |
+| PATCH | `/api/coverage/partners/:id` | JWT + ADMIN | Edita nome/código/descrição |
+| PATCH | `/api/coverage/partners/:id/status` | JWT + ADMIN | Ativa/inativa (reconstrói o snapshot) |
+| POST | `/api/coverage/layers` | JWT + ADMIN | Upload `multipart/form-data` (`file`, `partnerId`, `name`, `description?`, `version?`, `active?`) |
+| GET | `/api/coverage/layers` | JWT | Lista camadas (`search`, `partnerId`, `active`, `processingStatus`, `fileType`, `page`, `limit`; não-admin: lista básica de ativas) |
+| GET | `/api/coverage/layers/:id` | JWT + ADMIN | Detalhe da camada (nunca expõe o nome interno do arquivo) |
+| PATCH | `/api/coverage/layers/:id` | JWT + ADMIN | Edita nome/descrição/versão |
+| PATCH | `/api/coverage/layers/:id/status` | JWT + ADMIN | Ativa/inativa (reconstrói o snapshot) |
+| DELETE | `/api/coverage/layers/:id` | JWT + ADMIN | Exclui registro + arquivo físico + snapshot (recusado durante `PROCESSING`) |
 | GET | `/api/users` e demais rotas de usuários | JWT + perfil ADMIN | Administração de usuários |
 | GET | `/api/audit-logs` | JWT + perfil ADMIN | Auditoria com paginação e filtros |
 | GET | `/api/health` | pública | Health check |

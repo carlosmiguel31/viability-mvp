@@ -11,3 +11,5 @@ process.env.JWT_ACCESS_SECRET =
 process.env.JWT_REFRESH_SECRET =
   process.env.JWT_REFRESH_SECRET ?? "test-refresh-secret-fedcba9876543210fedcba9876543210";
 process.env.BCRYPT_ROUNDS = process.env.BCRYPT_ROUNDS ?? "4"; // rapido nos testes
+process.env.COVERAGE_STORAGE_PATH =
+  process.env.COVERAGE_STORAGE_PATH ?? "/tmp/viability-test-storage";

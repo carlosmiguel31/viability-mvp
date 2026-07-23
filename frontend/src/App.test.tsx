@@ -125,6 +125,7 @@ describe("menu por perfil", () => {
     render(<App />);
     await screen.findByText("Alice Admin");
     expect(screen.getByRole("button", { name: "Nova consulta" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Coberturas" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Usuários" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Auditoria" })).toBeTruthy();
   });
@@ -139,6 +140,7 @@ describe("menu por perfil", () => {
     render(<App />);
     await screen.findByText("Otto Operador");
     expect(screen.getByRole("button", { name: "Nova consulta" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Coberturas" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Usuários" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Auditoria" })).toBeNull();
   });

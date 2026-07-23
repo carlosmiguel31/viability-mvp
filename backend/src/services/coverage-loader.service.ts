@@ -2,7 +2,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { unzipSync, strFromU8 } from "fflate";
 import { parseCoverageKml } from "./coverage-parser.service";
-import { coverageMemoryStore } from "../stores/coverage-memory.store";
+import { coverageSnapshotStore } from "../stores/coverage-snapshot.store";
 import { env } from "../config/env";
 import { InvalidCoverageFileError, CoverageFileNotFoundError } from "../utils/errors";
 import { logger } from "../utils/logger";
@@ -16,7 +16,7 @@ export interface CoverageLimits {
   maxKmlBytes: number;
 }
 
-function defaultLimits(): CoverageLimits {
+export function coverageLimits(): CoverageLimits {
   return {
     maxCompressedBytes: env.MAX_KMZ_COMPRESSED_BYTES,
     maxUncompressedBytes: env.MAX_KMZ_UNCOMPRESSED_BYTES,
@@ -35,7 +35,7 @@ export interface CoverageLoadSummary {
   durationMs: number;
 }
 
-function extractKmlFromKmz(buffer: Buffer, limits: CoverageLimits): string {
+export function extractKmlFromKmz(buffer: Buffer, limits: CoverageLimits): string {
   if (buffer.byteLength < 4 || !buffer.subarray(0, 4).equals(ZIP_MAGIC)) {
     throw new InvalidCoverageFileError("o conteudo nao e um ZIP/KMZ valido");
   }
@@ -82,14 +82,16 @@ function extractKmlFromKmz(buffer: Buffer, limits: CoverageLimits): string {
 }
 
 /**
- * Carrega o arquivo de manchas de cobertura (.kml direto ou .kmz) e substitui
- * o estado em memoria. A troca so acontece DEPOIS que todo o arquivo foi
- * validado e interpretado; se qualquer etapa falhar, os dados antigos sao
- * preservados. Nada e extraido em disco.
+ * LEGADO/DEPRECIADO (v0.3.0): carrega UM arquivo (.kml/.kmz) como camada
+ * sintetica do snapshot. Mantido para compatibilidade com
+ * NETWORK_COVERAGE_PATH e para os testes; o caminho oficial agora e o
+ * cadastro de camadas por parceiro (coverage:import / upload). A troca so
+ * acontece DEPOIS da validacao completa; em falha, o snapshot anterior e
+ * preservado. Nada e extraido em disco.
  */
 export async function loadCoverageIntoMemory(
   filePath: string,
-  limits: CoverageLimits = defaultLimits()
+  limits: CoverageLimits = coverageLimits()
 ): Promise<CoverageLoadSummary> {
   const startedAt = Date.now();
   logger.info("Iniciando carga das manchas de cobertura", { filePath });
@@ -127,7 +129,20 @@ export async function loadCoverageIntoMemory(
   }
 
   const sourceFile = path.basename(filePath);
-  coverageMemoryStore.replaceAll({ ...result, sourceFile });
+  // LEGADO (NETWORK_COVERAGE_PATH): o arquivo unico vira uma camada
+  // sintetica no snapshot v0.3.0. Prefira cadastrar camadas reais via
+  // npm run coverage:import / POST /api/coverage/layers.
+  coverageSnapshotStore.replaceAll([
+    {
+      layerId: "legacy-file",
+      layerName: sourceFile,
+      partnerId: "legacy",
+      partnerName: "Arquivo local (legado)",
+      version: null,
+      areas: result.areas,
+      polygonCount: result.totalPolygons,
+    },
+  ]);
 
   const durationMs = Date.now() - startedAt;
   logger.info("Carga das manchas concluida", {

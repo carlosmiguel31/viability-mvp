@@ -6,6 +6,13 @@ import {
   AddressViabilityResponse,
   AuditLogPage,
   CoverageAreaWithPolygons,
+  CoverageFileType,
+  CoverageLayer,
+  CoverageLayersPage,
+  CoveragePartner,
+  CoveragePartnersPage,
+  CoverageProcessingStatus,
+  CoverageReloadSummary,
   CoverageStatus,
   GeographicCoordinate,
   PostalCodeAddress,
@@ -131,4 +138,124 @@ export function listAuditLogs(params: {
   if (params.from) query.set("from", `${params.from}T00:00:00`);
   if (params.to) query.set("to", `${params.to}T23:59:59.999`);
   return apiJson<AuditLogPage>(`/api/audit-logs?${query.toString()}`);
+}
+
+// ── Administração de coberturas (v0.3.0, ADMIN) ───────────────
+export function listCoveragePartners(params: {
+  search?: string;
+  active?: "" | "true" | "false";
+  page?: number;
+}): Promise<CoveragePartnersPage> {
+  const query = new URLSearchParams();
+  if (params.search) query.set("search", params.search);
+  if (params.active) query.set("active", params.active);
+  query.set("page", String(params.page ?? 1));
+  query.set("limit", "20");
+  return apiJson<CoveragePartnersPage>(`/api/coverage/partners?${query.toString()}`);
+}
+
+export function createCoveragePartner(input: {
+  name: string;
+  code: string;
+  description?: string;
+  active?: boolean;
+}): Promise<{ partner: CoveragePartner }> {
+  return apiJson("/api/coverage/partners", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateCoveragePartner(
+  id: string,
+  input: { name?: string; code?: string; description?: string | null }
+): Promise<{ partner: CoveragePartner }> {
+  return apiJson(`/api/coverage/partners/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function setCoveragePartnerStatus(
+  id: string,
+  active: boolean
+): Promise<{ partner: CoveragePartner }> {
+  return apiJson(`/api/coverage/partners/${id}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ active }),
+  });
+}
+
+export function listCoverageLayers(params: {
+  search?: string;
+  partnerId?: string;
+  active?: "" | "true" | "false";
+  processingStatus?: "" | CoverageProcessingStatus;
+  fileType?: "" | CoverageFileType;
+  page?: number;
+}): Promise<CoverageLayersPage> {
+  const query = new URLSearchParams();
+  if (params.search) query.set("search", params.search);
+  if (params.partnerId) query.set("partnerId", params.partnerId);
+  if (params.active) query.set("active", params.active);
+  if (params.processingStatus) query.set("processingStatus", params.processingStatus);
+  if (params.fileType) query.set("fileType", params.fileType);
+  query.set("page", String(params.page ?? 1));
+  query.set("limit", "20");
+  return apiJson<CoverageLayersPage>(`/api/coverage/layers?${query.toString()}`);
+}
+
+/**
+ * Upload multipart/form-data. O Content-Type NÃO é definido manualmente:
+ * o navegador precisa acrescentar o boundary do FormData.
+ */
+export function createCoverageLayer(input: {
+  file: File;
+  partnerId: string;
+  name: string;
+  description?: string;
+  version?: string;
+  active?: boolean;
+}): Promise<{ layer: CoverageLayer }> {
+  const formData = new FormData();
+  formData.append("file", input.file);
+  formData.append("partnerId", input.partnerId);
+  formData.append("name", input.name);
+  if (input.description) formData.append("description", input.description);
+  if (input.version) formData.append("version", input.version);
+  if (input.active !== undefined) formData.append("active", String(input.active));
+  return apiJson("/api/coverage/layers", { method: "POST", body: formData });
+}
+
+export function updateCoverageLayer(
+  id: string,
+  input: { name?: string; description?: string | null; version?: string | null }
+): Promise<{ layer: CoverageLayer }> {
+  return apiJson(`/api/coverage/layers/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function setCoverageLayerStatus(
+  id: string,
+  active: boolean
+): Promise<{ layer: CoverageLayer }> {
+  return apiJson(`/api/coverage/layers/${id}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ active }),
+  });
+}
+
+export function deleteCoverageLayer(id: string): Promise<void> {
+  return apiJson(`/api/coverage/layers/${id}`, { method: "DELETE" });
+}
+
+export function reloadCoverageSnapshot(): Promise<CoverageReloadSummary> {
+  return apiJson<CoverageReloadSummary>("/api/coverage/reload", { method: "POST" });
 }

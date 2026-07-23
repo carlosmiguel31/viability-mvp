@@ -1,19 +1,27 @@
 import { createApp } from "./app";
 import { env } from "./config/env";
-import { loadCoverageIntoMemory } from "./services/coverage-loader.service";
+import { initializeCoverageSnapshot } from "./services/coverage-snapshot.service";
+import { coverageSnapshotStore } from "./stores/coverage-snapshot.store";
 import { setupGracefulShutdown } from "./shutdown";
 import { logger } from "./utils/logger";
 
 async function bootstrap(): Promise<void> {
   const app = createApp();
 
-  // Processa as manchas na inicializacao. Se falhar, o servidor sobe mesmo
-  // assim e as consultas retornam COVERAGE_NOT_LOADED ate uma recarga valida.
-  try {
-    await loadCoverageIntoMemory(env.NETWORK_COVERAGE_PATH);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "erro desconhecido";
-    logger.error("Falha na carga inicial das manchas de cobertura", { message });
+  // v0.3.0: carrega TODAS as camadas ativas e READY (parceiro ativo) para o
+  // snapshot em memoria. Em falha, o servidor sobe mesmo assim e as
+  // consultas respondem COVERAGE_NOT_CONFIGURED ate uma reconstrucao valida.
+  await initializeCoverageSnapshot();
+
+  // Aviso de migracao do modelo legado de arquivo unico (NAO importa
+  // automaticamente a cada inicializacao — a importacao e um comando
+  // explicito e unico).
+  if (!coverageSnapshotStore.isConfigured() && env.NETWORK_COVERAGE_PATH) {
+    logger.warn(
+      "NETWORK_COVERAGE_PATH está definido, mas o modelo de arquivo único é LEGADO. Importe o arquivo como camada: npm run coverage:import -- --file \"" +
+        env.NETWORK_COVERAGE_PATH +
+        '" --partner "Rede Neutra" --code "REDE_NEUTRA" --layer "Cobertura inicial"'
+    );
   }
 
   const server = app.listen(env.PORT, () => {

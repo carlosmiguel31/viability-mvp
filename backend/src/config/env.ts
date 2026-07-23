@@ -38,6 +38,10 @@ const envSchema = z
 
     CORS_ALLOWED_ORIGINS: z.string().optional().default("http://localhost:5173"),
 
+    /** Armazenamento dos arquivos KML/KMZ das camadas (fora do banco). */
+    COVERAGE_STORAGE_PATH: z.string().default("./storage/coverage"),
+    COVERAGE_MAX_FILE_SIZE_MB: z.coerce.number().int().positive().max(200).default(25),
+
     /** Banco DA APLICACAO (leitura e escrita): usuarios, sessoes, auditoria. */
     APP_DATABASE_URL: z.string().optional().default(""),
 

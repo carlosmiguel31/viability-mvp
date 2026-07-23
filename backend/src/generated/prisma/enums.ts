@@ -17,3 +17,21 @@ export const UserRole = {
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const CoverageFileType = {
+  KML: 'KML',
+  KMZ: 'KMZ'
+} as const
+
+export type CoverageFileType = (typeof CoverageFileType)[keyof typeof CoverageFileType]
+
+
+export const CoverageProcessingStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  READY: 'READY',
+  FAILED: 'FAILED'
+} as const
+
+export type CoverageProcessingStatus = (typeof CoverageProcessingStatus)[keyof typeof CoverageProcessingStatus]

@@ -232,6 +232,9 @@ export type UserWhereInput = {
   updatedBy?: Prisma.UuidNullableFilter<"User"> | string | null
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  coveragePartnersCreated?: Prisma.CoveragePartnerListRelationFilter
+  coveragePartnersUpdated?: Prisma.CoveragePartnerListRelationFilter
+  coverageLayersUploaded?: Prisma.CoverageLayerListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -248,6 +251,9 @@ export type UserOrderByWithRelationInput = {
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerOrderByRelationAggregateInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerOrderByRelationAggregateInput
+  coverageLayersUploaded?: Prisma.CoverageLayerOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -267,6 +273,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedBy?: Prisma.UuidNullableFilter<"User"> | string | null
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  coveragePartnersCreated?: Prisma.CoveragePartnerListRelationFilter
+  coveragePartnersUpdated?: Prisma.CoveragePartnerListRelationFilter
+  coverageLayersUploaded?: Prisma.CoverageLayerListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -317,6 +326,9 @@ export type UserCreateInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -333,6 +345,9 @@ export type UserUncheckedCreateInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
 }
 
 export type UserUpdateInput = {
@@ -349,6 +364,9 @@ export type UserUpdateInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -365,6 +383,9 @@ export type UserUncheckedUpdateInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -515,6 +536,54 @@ export type UserUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type UserCreateNestedOneWithoutCoveragePartnersCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersCreatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCoveragePartnersCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutCoveragePartnersUpdatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersUpdatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersUpdatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCoveragePartnersUpdatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCoveragePartnersCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersCreatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCoveragePartnersCreatedInput
+  upsert?: Prisma.UserUpsertWithoutCoveragePartnersCreatedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCoveragePartnersCreatedInput, Prisma.UserUpdateWithoutCoveragePartnersCreatedInput>, Prisma.UserUncheckedUpdateWithoutCoveragePartnersCreatedInput>
+}
+
+export type UserUpdateOneWithoutCoveragePartnersUpdatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersUpdatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersUpdatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCoveragePartnersUpdatedInput
+  upsert?: Prisma.UserUpsertWithoutCoveragePartnersUpdatedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCoveragePartnersUpdatedInput, Prisma.UserUpdateWithoutCoveragePartnersUpdatedInput>, Prisma.UserUncheckedUpdateWithoutCoveragePartnersUpdatedInput>
+}
+
+export type UserCreateNestedOneWithoutCoverageLayersUploadedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCoverageLayersUploadedInput, Prisma.UserUncheckedCreateWithoutCoverageLayersUploadedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCoverageLayersUploadedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCoverageLayersUploadedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCoverageLayersUploadedInput, Prisma.UserUncheckedCreateWithoutCoverageLayersUploadedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCoverageLayersUploadedInput
+  upsert?: Prisma.UserUpsertWithoutCoverageLayersUploadedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCoverageLayersUploadedInput, Prisma.UserUpdateWithoutCoverageLayersUploadedInput>, Prisma.UserUncheckedUpdateWithoutCoverageLayersUploadedInput>
+}
+
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string
   name: string
@@ -528,6 +597,9 @@ export type UserCreateWithoutRefreshTokensInput = {
   createdBy?: string | null
   updatedBy?: string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
 }
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -543,6 +615,9 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   createdBy?: string | null
   updatedBy?: string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
 }
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -574,6 +649,9 @@ export type UserUpdateWithoutRefreshTokensInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -589,6 +667,9 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -604,6 +685,9 @@ export type UserCreateWithoutAuditLogsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -619,6 +703,9 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -650,6 +737,9 @@ export type UserUpdateWithoutAuditLogsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -665,6 +755,273 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
+}
+
+export type UserCreateWithoutCoveragePartnersCreatedInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserUncheckedCreateWithoutCoveragePartnersCreatedInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserCreateOrConnectWithoutCoveragePartnersCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersCreatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersCreatedInput>
+}
+
+export type UserCreateWithoutCoveragePartnersUpdatedInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserUncheckedCreateWithoutCoveragePartnersUpdatedInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserCreateOrConnectWithoutCoveragePartnersUpdatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersUpdatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersUpdatedInput>
+}
+
+export type UserUpsertWithoutCoveragePartnersCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCoveragePartnersCreatedInput, Prisma.UserUncheckedUpdateWithoutCoveragePartnersCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersCreatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCoveragePartnersCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCoveragePartnersCreatedInput, Prisma.UserUncheckedUpdateWithoutCoveragePartnersCreatedInput>
+}
+
+export type UserUpdateWithoutCoveragePartnersCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCoveragePartnersCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
+}
+
+export type UserUpsertWithoutCoveragePartnersUpdatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCoveragePartnersUpdatedInput, Prisma.UserUncheckedUpdateWithoutCoveragePartnersUpdatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCoveragePartnersUpdatedInput, Prisma.UserUncheckedCreateWithoutCoveragePartnersUpdatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCoveragePartnersUpdatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCoveragePartnersUpdatedInput, Prisma.UserUncheckedUpdateWithoutCoveragePartnersUpdatedInput>
+}
+
+export type UserUpdateWithoutCoveragePartnersUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCoveragePartnersUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
+}
+
+export type UserCreateWithoutCoverageLayersUploadedInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutCoverageLayersUploadedInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutCoverageLayersUploadedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCoverageLayersUploadedInput, Prisma.UserUncheckedCreateWithoutCoverageLayersUploadedInput>
+}
+
+export type UserUpsertWithoutCoverageLayersUploadedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCoverageLayersUploadedInput, Prisma.UserUncheckedUpdateWithoutCoverageLayersUploadedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCoverageLayersUploadedInput, Prisma.UserUncheckedCreateWithoutCoverageLayersUploadedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCoverageLayersUploadedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCoverageLayersUploadedInput, Prisma.UserUncheckedUpdateWithoutCoverageLayersUploadedInput>
+}
+
+export type UserUpdateWithoutCoverageLayersUploadedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCoverageLayersUploadedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
 
@@ -675,11 +1032,17 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
 export type UserCountOutputType = {
   refreshTokens: number
   auditLogs: number
+  coveragePartnersCreated: number
+  coveragePartnersUpdated: number
+  coverageLayersUploaded: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+  coveragePartnersCreated?: boolean | UserCountOutputTypeCountCoveragePartnersCreatedArgs
+  coveragePartnersUpdated?: boolean | UserCountOutputTypeCountCoveragePartnersUpdatedArgs
+  coverageLayersUploaded?: boolean | UserCountOutputTypeCountCoverageLayersUploadedArgs
 }
 
 /**
@@ -706,6 +1069,27 @@ export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.AuditLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCoveragePartnersCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CoveragePartnerWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCoveragePartnersUpdatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CoveragePartnerWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCoverageLayersUploadedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CoverageLayerWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -721,6 +1105,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedBy?: boolean
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  coveragePartnersCreated?: boolean | Prisma.User$coveragePartnersCreatedArgs<ExtArgs>
+  coveragePartnersUpdated?: boolean | Prisma.User$coveragePartnersUpdatedArgs<ExtArgs>
+  coverageLayersUploaded?: boolean | Prisma.User$coverageLayersUploadedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -770,6 +1157,9 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  coveragePartnersCreated?: boolean | Prisma.User$coveragePartnersCreatedArgs<ExtArgs>
+  coveragePartnersUpdated?: boolean | Prisma.User$coveragePartnersUpdatedArgs<ExtArgs>
+  coverageLayersUploaded?: boolean | Prisma.User$coverageLayersUploadedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -780,6 +1170,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    coveragePartnersCreated: Prisma.$CoveragePartnerPayload<ExtArgs>[]
+    coveragePartnersUpdated: Prisma.$CoveragePartnerPayload<ExtArgs>[]
+    coverageLayersUploaded: Prisma.$CoverageLayerPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1192,6 +1585,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  coveragePartnersCreated<T extends Prisma.User$coveragePartnersCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coveragePartnersCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoveragePartnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  coveragePartnersUpdated<T extends Prisma.User$coveragePartnersUpdatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coveragePartnersUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoveragePartnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  coverageLayersUploaded<T extends Prisma.User$coverageLayersUploadedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coverageLayersUploadedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoverageLayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1670,6 +2066,78 @@ export type User$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * User.coveragePartnersCreated
+ */
+export type User$coveragePartnersCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CoveragePartner
+   */
+  select?: Prisma.CoveragePartnerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CoveragePartner
+   */
+  omit?: Prisma.CoveragePartnerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CoveragePartnerInclude<ExtArgs> | null
+  where?: Prisma.CoveragePartnerWhereInput
+  orderBy?: Prisma.CoveragePartnerOrderByWithRelationInput | Prisma.CoveragePartnerOrderByWithRelationInput[]
+  cursor?: Prisma.CoveragePartnerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CoveragePartnerScalarFieldEnum | Prisma.CoveragePartnerScalarFieldEnum[]
+}
+
+/**
+ * User.coveragePartnersUpdated
+ */
+export type User$coveragePartnersUpdatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CoveragePartner
+   */
+  select?: Prisma.CoveragePartnerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CoveragePartner
+   */
+  omit?: Prisma.CoveragePartnerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CoveragePartnerInclude<ExtArgs> | null
+  where?: Prisma.CoveragePartnerWhereInput
+  orderBy?: Prisma.CoveragePartnerOrderByWithRelationInput | Prisma.CoveragePartnerOrderByWithRelationInput[]
+  cursor?: Prisma.CoveragePartnerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CoveragePartnerScalarFieldEnum | Prisma.CoveragePartnerScalarFieldEnum[]
+}
+
+/**
+ * User.coverageLayersUploaded
+ */
+export type User$coverageLayersUploadedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CoverageLayer
+   */
+  select?: Prisma.CoverageLayerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CoverageLayer
+   */
+  omit?: Prisma.CoverageLayerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CoverageLayerInclude<ExtArgs> | null
+  where?: Prisma.CoverageLayerWhereInput
+  orderBy?: Prisma.CoverageLayerOrderByWithRelationInput | Prisma.CoverageLayerOrderByWithRelationInput[]
+  cursor?: Prisma.CoverageLayerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CoverageLayerScalarFieldEnum | Prisma.CoverageLayerScalarFieldEnum[]
 }
 
 /**

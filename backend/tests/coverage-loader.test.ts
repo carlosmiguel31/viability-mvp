@@ -4,7 +4,7 @@ import os from "os";
 import { promises as fs } from "fs";
 import { zipSync, strToU8 } from "fflate";
 import { loadCoverageIntoMemory, CoverageLimits } from "../src/services/coverage-loader.service";
-import { coverageMemoryStore } from "../src/stores/coverage-memory.store";
+import { coverageSnapshotStore } from "../src/stores/coverage-snapshot.store";
 import {
   createInvalidKmzFile,
   createTestKmlFile,
@@ -22,7 +22,7 @@ const LIMITS: CoverageLimits = {
 
 describe("loadCoverageIntoMemory", () => {
   beforeEach(() => {
-    coverageMemoryStore.clear();
+    coverageSnapshotStore.clear();
   });
 
   it("carrega um .kml direto", async () => {
@@ -34,15 +34,15 @@ describe("loadCoverageIntoMemory", () => {
     expect(summary.ignoredLines).toBe(1);
     expect(summary.ignoredPoints).toBe(1);
     expect(summary.rejectedGeometries).toBe(1);
-    expect(coverageMemoryStore.isLoaded()).toBe(true);
-    expect(coverageMemoryStore.getStatus().sourceFile).toBe("manchas.kml");
+    expect(coverageSnapshotStore.isConfigured()).toBe(true);
+    expect(coverageSnapshotStore.getStatus().sourceFile).toBe("manchas.kml");
   });
 
   it("carrega um KML dentro de um .kmz", async () => {
     const filePath = await createTestKmzFile();
     const summary = await loadCoverageIntoMemory(filePath, LIMITS);
     expect(summary.totalAreas).toBe(3);
-    expect(coverageMemoryStore.getStatus().sourceFile).toBe("manchas.kmz");
+    expect(coverageSnapshotStore.getStatus().sourceFile).toBe("manchas.kmz");
   });
 
   it("rejeita .kmz que nao e ZIP valido", async () => {
@@ -50,7 +50,7 @@ describe("loadCoverageIntoMemory", () => {
     await expect(loadCoverageIntoMemory(filePath, LIMITS)).rejects.toBeInstanceOf(
       InvalidCoverageFileError
     );
-    expect(coverageMemoryStore.isLoaded()).toBe(false);
+    expect(coverageSnapshotStore.isConfigured()).toBe(false);
   });
 
   it("rejeita extensao nao suportada", async () => {
@@ -68,13 +68,13 @@ describe("loadCoverageIntoMemory", () => {
 
   it("recarga invalida preserva os dados anteriores", async () => {
     await loadCoverageIntoMemory(await createTestKmlFile(), LIMITS);
-    const before = coverageMemoryStore.getStatus();
+    const before = coverageSnapshotStore.getStatus();
 
     await expect(
       loadCoverageIntoMemory(await createInvalidKmzFile(), LIMITS)
     ).rejects.toBeInstanceOf(InvalidCoverageFileError);
 
-    const after = coverageMemoryStore.getStatus();
+    const after = coverageSnapshotStore.getStatus();
     expect(after.loaded).toBe(true);
     expect(after.totalAreas).toBe(before.totalAreas);
     expect(after.sourceFile).toBe("manchas.kml");

@@ -1,10 +1,11 @@
 import { env } from "../config/env";
-import { findCoverageAreasForPoint } from "./coverage-geo.service";
+import { findCoverageLayerMatches } from "./coverage-geo.service";
 import { groupElementsByLocation } from "./network-grouping.service";
-import { coverageMemoryStore } from "../stores/coverage-memory.store";
+import { coverageSnapshotStore } from "../stores/coverage-snapshot.store";
 import { VoalleRepository, voalleRepository } from "../repositories/voalle.repository";
 import {
   CoverageAreaSummary,
+  CoverageMatch,
   NetworkReferenceStatus,
   ViabilityResponse,
 } from "../types/viability.types";
@@ -20,6 +21,8 @@ const MESSAGES = {
   OUTSIDE_COVERAGE: "O endereço está fora das áreas de cobertura cadastradas.",
   COVERAGE_NOT_LOADED:
     "As manchas de cobertura ainda não foram carregadas. Tente novamente em instantes.",
+  COVERAGE_NOT_CONFIGURED:
+    "Nenhuma cobertura está configurada no momento. Cadastre e ative pelo menos uma camada de cobertura.",
 } as const;
 
 const NETWORK_REFERENCE_MESSAGES: Partial<Record<NetworkReferenceStatus, string>> = {
@@ -62,29 +65,49 @@ export async function checkViability(
     networkReferenceMessage: null,
   };
 
-  if (!coverageMemoryStore.isLoaded()) {
+  if (!coverageSnapshotStore.isConfigured()) {
+    // Sem NENHUMA camada ativa cadastrada: informar claramente, em vez de
+    // tratar todos os enderecos como fora da cobertura silenciosamente.
     return {
       ...base,
-      status: "COVERAGE_NOT_LOADED",
-      message: MESSAGES.COVERAGE_NOT_LOADED,
+      status: "COVERAGE_NOT_CONFIGURED",
+      message: MESSAGES.COVERAGE_NOT_CONFIGURED,
+      coverageMatches: [],
       coverage: { insideCoverage: false, primaryArea: null, matchingAreas: [] },
       requiresTechnicalConfirmation: false,
     };
   }
 
-  const matching = findCoverageAreasForPoint(input.latitude, input.longitude);
-  if (matching.length === 0) {
+  const layerMatches = findCoverageLayerMatches(input.latitude, input.longitude);
+  if (layerMatches.length === 0) {
     // Fora da cobertura: o Voalle NAO e consultado (NOT_CHECKED).
     return {
       ...base,
       status: "OUTSIDE_COVERAGE",
       message: MESSAGES.OUTSIDE_COVERAGE,
+      coverageMatches: [],
       coverage: { insideCoverage: false, primaryArea: null, matchingAreas: [] },
       requiresTechnicalConfirmation: false,
     };
   }
 
+  // Todas as camadas/parceiros que cobrem o ponto, sem duplicacoes.
+  const seenLayers = new Set<string>();
+  const coverageMatches: CoverageMatch[] = [];
+  for (const match of layerMatches) {
+    if (seenLayers.has(match.layer.layerId)) continue;
+    seenLayers.add(match.layer.layerId);
+    coverageMatches.push({
+      partnerId: match.layer.partnerId,
+      partnerName: match.layer.partnerName,
+      layerId: match.layer.layerId,
+      layerName: match.layer.layerName,
+      version: match.layer.version,
+    });
+  }
+
   // Dentro da mancha: viabilidade preliminar JA esta definida.
+  const matching = layerMatches.flatMap((match) => match.matchedAreas);
   const coverage = {
     insideCoverage: true,
     primaryArea: toSummary(matching[0]),
@@ -122,6 +145,7 @@ export async function checkViability(
   return {
     status: "PRELIMINARILY_VIABLE",
     message: MESSAGES.PRELIMINARILY_VIABLE,
+    coverageMatches,
     networkReferenceStatus,
     networkReferenceMessage: NETWORK_REFERENCE_MESSAGES[networkReferenceStatus] ?? null,
     searchedLocation,
