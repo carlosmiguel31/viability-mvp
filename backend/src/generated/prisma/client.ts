@@ -68,3 +68,12 @@ export type CoveragePartner = Prisma.CoveragePartnerModel
  * interno e jamais exposto pela API.
  */
 export type CoverageLayer = Prisma.CoverageLayerModel
+/**
+ * Model ViabilityConsultation
+ * Historico IMUTAVEL das consultas de viabilidade (v0.4.0). Cada registro
+ * e um snapshot do resultado apresentado no momento da consulta — mudancas
+ * posteriores nas camadas/parceiros NAO alteram consultas antigas. Nunca
+ * armazena credenciais, tokens, respostas brutas do Google, stack traces,
+ * storedFileName nem poligonos.
+ */
+export type ViabilityConsultation = Prisma.ViabilityConsultationModel

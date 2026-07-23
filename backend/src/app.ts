@@ -4,6 +4,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { viabilityRoutes } from "./routes/viability.routes";
 import { coverageRoutes } from "./routes/coverage.routes";
+import { consultationRoutes } from "./routes/consultation.routes";
 import { addressRoutes } from "./routes/address.routes";
 import { authRoutes } from "./routes/auth.routes";
 import { userRoutes } from "./routes/user.routes";
@@ -110,6 +111,7 @@ export function createApp(rateLimits: AppRateLimits = DEFAULT_RATE_LIMITS): expr
   app.use("/api/addresses", viabilityLimiter, addressRoutes);
   app.use("/api/coverage/reload", reloadLimiter);
   app.use("/api/coverage", coverageRoutes);
+  app.use("/api/consultations", consultationRoutes);
 
   // Rotas inexistentes retornam JSON amigavel.
   app.use((_req, res) => {

@@ -34,6 +34,13 @@ export interface PostalCodeProvider {
 
 export type GeocodingConfidence = "HIGH" | "MEDIUM" | "LOW";
 
+export type GeocodingLocationType =
+  | "ROOFTOP"
+  | "RANGE_INTERPOLATED"
+  | "GEOMETRIC_CENTER"
+  | "APPROXIMATE"
+  | "UNKNOWN";
+
 export interface GeocodingResult {
   latitude: number;
   longitude: number;
@@ -41,6 +48,8 @@ export interface GeocodingResult {
   confidence: GeocodingConfidence;
   provider: string;
   partialMatch: boolean;
+  /** location_type bruto do provider (UNKNOWN quando nao informado). */
+  locationType: GeocodingLocationType;
 }
 
 export interface GeocodingProvider {

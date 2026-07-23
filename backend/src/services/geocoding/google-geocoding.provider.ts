@@ -26,6 +26,13 @@ interface GoogleGeocodeResponse {
   }>;
 }
 
+const LOCATION_TYPES = new Set([
+  "ROOFTOP",
+  "RANGE_INTERPOLATED",
+  "GEOMETRIC_CENTER",
+  "APPROXIMATE",
+] as const);
+
 function confidenceFromLocationType(locationType: string): GeocodingConfidence {
   if (locationType === "ROOFTOP") return "HIGH";
   if (locationType === "RANGE_INTERPOLATED") return "MEDIUM";
@@ -87,6 +94,10 @@ export class GoogleGeocodingProvider implements GeocodingProvider {
       longitude: first.geometry.location.lng,
       formattedAddress: first.formatted_address,
       confidence: confidenceFromLocationType(first.geometry.location_type),
+      // location_type do Google preservado no resultado (UNKNOWN se ausente).
+      locationType: LOCATION_TYPES.has(first.geometry.location_type)
+        ? first.geometry.location_type
+        : "UNKNOWN",
       provider: "google",
       // Correspondencia parcial ou multiplos resultados = localizacao ambigua.
       partialMatch: Boolean(first.partial_match) || body.results.length > 1,

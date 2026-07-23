@@ -33,7 +33,7 @@ async function buildSnapshotLayers(): Promise<CoverageSnapshotLayer[]> {
       processingStatus: "READY",
       partner: { active: true },
     },
-    include: { partner: { select: { id: true, name: true } } },
+    include: { partner: { select: { id: true, name: true, code: true } } },
     orderBy: { createdAt: "asc" },
   });
 
@@ -57,6 +57,7 @@ async function buildSnapshotLayers(): Promise<CoverageSnapshotLayer[]> {
       layerName: layer.name,
       partnerId: layer.partner.id,
       partnerName: layer.partner.name,
+      partnerCode: layer.partner.code,
       version: layer.version,
       areas: parsed.areas.map((area) => ({
         ...area,

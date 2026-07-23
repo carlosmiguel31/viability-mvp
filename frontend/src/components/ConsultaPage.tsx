@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import MapView from "./MapView";
 import ResultPanel from "./ResultPanel";
 import AddressForm from "./AddressForm";
-import { checkViabilityByAddress, fetchCoverageAreas } from "../api";
+import { ApiError, checkViabilityByAddress, fetchCoverageAreas } from "../api";
 import {
   AddressFormValues,
   AddressViabilityResponse,
@@ -24,10 +24,25 @@ const EMPTY_ADDRESS: AddressFormValues = {
 export default function ConsultaPage() {
   const [address, setAddress] = useState<AddressFormValues>(EMPTY_ADDRESS);
   const [result, setResult] = useState<AddressViabilityResponse | null>(null);
+  // Token opaco da confirmacao de localizacao: SOMENTE em memoria (nunca em
+  // localStorage/sessionStorage) e invalidado ao editar o endereco.
+  const [confirmationToken, setConfirmationToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [coverageAreas, setCoverageAreas] = useState<CoverageAreaWithPolygons[] | null>(null);
   const [markerPosition, setMarkerPosition] = useState<GeographicCoordinate | null>(null);
+
+  function handleAddressChange(next: AddressFormValues) {
+    // Qualquer alteração no endereço invalida o token de confirmação: ele é
+    // vinculado (por hash) ao endereço geocodificado originalmente.
+    setConfirmationToken(null);
+    setAddress(next);
+  }
+
+  function handleAddressPatch(patch: (previous: AddressFormValues) => AddressFormValues) {
+    setConfirmationToken(null);
+    setAddress(patch);
+  }
   const [markerAdjusted, setMarkerAdjusted] = useState(false);
 
   useEffect(() => {
@@ -38,10 +53,19 @@ export default function ConsultaPage() {
 
   async function runCheck(adjusted?: GeographicCoordinate) {
     setError(null);
+    // Nova consulta: o resultado (e o protocolo) anterior deixa a tela já
+    // no início — nunca se reutiliza protocolo entre consultas.
+    setResult(null);
+    if (!adjusted) setConfirmationToken(null); // consulta nova = token novo
     setLoading(true);
     try {
-      const response = await checkViabilityByAddress(address, adjusted);
+      const response = await checkViabilityByAddress(
+        address,
+        adjusted,
+        adjusted ? (confirmationToken ?? undefined) : undefined
+      );
       setResult(response);
+      setConfirmationToken(response.locationConfirmationToken ?? null);
       const { latitude, longitude } = response.searchedAddress;
       if (latitude !== null && longitude !== null) {
         setMarkerPosition({ latitude, longitude });
@@ -49,7 +73,14 @@ export default function ConsultaPage() {
       setMarkerAdjusted(Boolean(adjusted));
     } catch (err) {
       setResult(null);
-      setError(err instanceof Error ? err.message : "Falha ao consultar viabilidade.");
+      if (err instanceof ApiError && err.code === "LOCATION_CONFIRMATION_INVALID") {
+        setConfirmationToken(null);
+        setError(
+          "A confirmação da localização expirou ou é inválida. Refaça a consulta do endereço para gerar uma nova."
+        );
+      } else {
+        setError(err instanceof Error ? err.message : "Falha ao consultar viabilidade.");
+      }
     } finally {
       setLoading(false);
     }
@@ -77,8 +108,8 @@ export default function ConsultaPage() {
       <div className="space-y-4">
         <AddressForm
           values={address}
-          onChange={setAddress}
-          onPatch={setAddress}
+          onChange={handleAddressChange}
+          onPatch={handleAddressPatch}
           onSearch={handleSearch}
           loading={loading}
         />

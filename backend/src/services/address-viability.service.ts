@@ -80,6 +80,7 @@ export async function checkViabilityByAddress(
   };
 
   let latitude: number;
+  let geocodingSummary: AddressViabilityResponse["geocoding"];
   let longitude: number;
   let searchedAddress: SearchedAddress;
 
@@ -145,6 +146,7 @@ export async function checkViabilityByAddress(
           formattedAddress: geocoding.formattedAddress,
           confidence: geocoding.confidence,
           partialMatch: geocoding.partialMatch,
+          locationType: geocoding.locationType,
         },
         coverage: emptyCoverage(),
         nearestNetworkLocation: null,
@@ -156,6 +158,12 @@ export async function checkViabilityByAddress(
 
     latitude = geocoding.latitude;
     longitude = geocoding.longitude;
+    geocodingSummary = {
+      formattedAddress: geocoding.formattedAddress,
+      confidence: geocoding.confidence,
+      partialMatch: geocoding.partialMatch,
+      locationType: geocoding.locationType,
+    };
     searchedAddress = {
       ...baseSearched,
       formattedAddress: geocoding.formattedAddress,
@@ -174,6 +182,7 @@ export async function checkViabilityByAddress(
     networkReferenceStatus: geographic.networkReferenceStatus,
     networkReferenceMessage: geographic.networkReferenceMessage,
     searchedAddress,
+    ...(geocodingSummary ? { geocoding: geocodingSummary } : {}),
     coverage: geographic.coverage,
     nearestNetworkLocation: geographic.nearestNetworkLocation
       ? toPublicNetworkLocation(geographic.nearestNetworkLocation)

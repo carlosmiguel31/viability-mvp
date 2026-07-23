@@ -19,6 +19,7 @@ import {
   POINT_OUTSIDE,
   readFixtureKml,
   resetAppDatabase,
+  confirmLocationAs,
 } from "./helpers";
 
 const address = normalizeAddressInput({
@@ -38,6 +39,7 @@ function loadCoverage(): void {
         layerName: "manchas.kml",
         partnerId: "legacy",
         partnerName: "Arquivo local (legado)",
+        partnerCode: "LEGACY",
         version: null,
         areas: result.areas,
         polygonCount: result.totalPolygons,
@@ -269,26 +271,24 @@ describe("POST /api/viabilities/check e /confirm-location (endereço, HTTP)", ()
 
   it("qualquer perfil autenticado consulta viabilidade (VIEWER incluído)", async () => {
     loadCoverage();
-    const res = await request(app)
-      .post("/api/viabilities/check")
-      .set("Authorization", `Bearer ${viewerToken}`)
-      .send({
-        address: { street: "Rua Exemplo", number: "100", city: "Belo Horizonte", state: "MG" },
-        adjustedLocation: POINT_OUTSIDE,
-      });
+    const res = await confirmLocationAs(
+      app,
+      viewerToken,
+      { street: "Rua Exemplo", number: "100", city: "Belo Horizonte", state: "MG" },
+      POINT_OUTSIDE
+    );
     expect(res.status).toBe(200);
     expect(res.body.status).toBe("OUTSIDE_COVERAGE");
   });
 
-  it("POST /confirm-location aceita o ajuste do marcador autenticado", async () => {
+  it("POST /confirm-location aceita o ajuste do marcador autenticado (com token)", async () => {
     loadCoverage();
-    const res = await request(app)
-      .post("/api/viabilities/confirm-location")
-      .set("Authorization", `Bearer ${viewerToken}`)
-      .send({
-        address: { street: "Rua Exemplo", number: "100", city: "Belo Horizonte", state: "MG" },
-        adjustedLocation: POINT_INSIDE_BARREIRO,
-      });
+    const res = await confirmLocationAs(
+      app,
+      viewerToken,
+      { street: "Rua Exemplo", number: "100", city: "Belo Horizonte", state: "MG" },
+      POINT_INSIDE_BARREIRO
+    );
     expect(res.status).toBe(200);
     expect(res.body.searchedAddress.manuallyAdjusted).toBe(true);
   });

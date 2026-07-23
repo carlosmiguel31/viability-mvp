@@ -5,14 +5,16 @@ import UsersPage from "./components/UsersPage";
 import ChangePasswordForm from "./components/ChangePasswordForm";
 import AuditPage from "./components/AuditPage";
 import CoverageAdminPage from "./components/CoverageAdminPage";
+import ConsultationHistoryPage from "./components/ConsultationHistoryPage";
 import { logout, onSessionChange, restoreSession, SessionUser } from "./auth";
 import { fetchCoverageStatus } from "./api";
 import { CoverageStatus, ROLE_LABELS } from "./types";
 
-type View = "consulta" | "coberturas" | "usuarios" | "auditoria" | "senha";
+type View = "consulta" | "historico" | "coberturas" | "usuarios" | "auditoria" | "senha";
 
 const MENU: Array<{ view: View; label: string; adminOnly: boolean }> = [
   { view: "consulta", label: "Nova consulta", adminOnly: false },
+  { view: "historico", label: "Histórico", adminOnly: false },
   { view: "coberturas", label: "Coberturas", adminOnly: true },
   { view: "usuarios", label: "Usuários", adminOnly: true },
   { view: "auditoria", label: "Auditoria", adminOnly: true },
@@ -128,6 +130,7 @@ export default function App() {
 
         <main className="min-w-0 flex-1">
           {view === "consulta" && <ConsultaPage />}
+          {view === "historico" && <ConsultationHistoryPage currentUser={user} />}
           {view === "senha" && <ChangePasswordForm />}
           {view === "coberturas" && user.role === "ADMIN" && (
             <CoverageAdminPage onCoverageChanged={refreshCoverageStatus} />

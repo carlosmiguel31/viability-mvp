@@ -13,3 +13,10 @@ process.env.JWT_REFRESH_SECRET =
 process.env.BCRYPT_ROUNDS = process.env.BCRYPT_ROUNDS ?? "4"; // rapido nos testes
 process.env.COVERAGE_STORAGE_PATH =
   process.env.COVERAGE_STORAGE_PATH ?? "/tmp/viability-test-storage";
+// Geocodificacao DEV nos testes HTTP: LOW + partialMatch => primeira chamada
+// sem adjustedLocation resulta em ADDRESS_AMBIGUOUS (sem rede externa).
+process.env.GEOCODING_PROVIDER = process.env.GEOCODING_PROVIDER ?? "dev";
+process.env.DEV_GEOCODING_FIXED_LAT = process.env.DEV_GEOCODING_FIXED_LAT ?? "-19.988";
+process.env.DEV_GEOCODING_FIXED_LNG = process.env.DEV_GEOCODING_FIXED_LNG ?? "-44.018";
+process.env.LOCATION_CONFIRMATION_SECRET =
+  process.env.LOCATION_CONFIRMATION_SECRET ?? "test-location-confirmation-secret-0123456789";

@@ -232,6 +232,7 @@ export type UserWhereInput = {
   updatedBy?: Prisma.UuidNullableFilter<"User"> | string | null
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  viabilityConsultations?: Prisma.ViabilityConsultationListRelationFilter
   coveragePartnersCreated?: Prisma.CoveragePartnerListRelationFilter
   coveragePartnersUpdated?: Prisma.CoveragePartnerListRelationFilter
   coverageLayersUploaded?: Prisma.CoverageLayerListRelationFilter
@@ -251,6 +252,7 @@ export type UserOrderByWithRelationInput = {
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  viabilityConsultations?: Prisma.ViabilityConsultationOrderByRelationAggregateInput
   coveragePartnersCreated?: Prisma.CoveragePartnerOrderByRelationAggregateInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerOrderByRelationAggregateInput
   coverageLayersUploaded?: Prisma.CoverageLayerOrderByRelationAggregateInput
@@ -273,6 +275,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedBy?: Prisma.UuidNullableFilter<"User"> | string | null
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  viabilityConsultations?: Prisma.ViabilityConsultationListRelationFilter
   coveragePartnersCreated?: Prisma.CoveragePartnerListRelationFilter
   coveragePartnersUpdated?: Prisma.CoveragePartnerListRelationFilter
   coverageLayersUploaded?: Prisma.CoverageLayerListRelationFilter
@@ -326,6 +329,7 @@ export type UserCreateInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
@@ -345,6 +349,7 @@ export type UserUncheckedCreateInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
@@ -364,6 +369,7 @@ export type UserUpdateInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
@@ -383,6 +389,7 @@ export type UserUncheckedUpdateInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
@@ -584,6 +591,22 @@ export type UserUpdateOneWithoutCoverageLayersUploadedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCoverageLayersUploadedInput, Prisma.UserUpdateWithoutCoverageLayersUploadedInput>, Prisma.UserUncheckedUpdateWithoutCoverageLayersUploadedInput>
 }
 
+export type UserCreateNestedOneWithoutViabilityConsultationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutViabilityConsultationsInput, Prisma.UserUncheckedCreateWithoutViabilityConsultationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutViabilityConsultationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutViabilityConsultationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutViabilityConsultationsInput, Prisma.UserUncheckedCreateWithoutViabilityConsultationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutViabilityConsultationsInput
+  upsert?: Prisma.UserUpsertWithoutViabilityConsultationsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutViabilityConsultationsInput, Prisma.UserUpdateWithoutViabilityConsultationsInput>, Prisma.UserUncheckedUpdateWithoutViabilityConsultationsInput>
+}
+
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string
   name: string
@@ -597,6 +620,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   createdBy?: string | null
   updatedBy?: string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
@@ -615,6 +639,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   createdBy?: string | null
   updatedBy?: string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
@@ -649,6 +674,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
@@ -667,6 +693,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
@@ -685,6 +712,7 @@ export type UserCreateWithoutAuditLogsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
@@ -703,6 +731,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   createdBy?: string | null
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
@@ -737,6 +766,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
@@ -755,6 +785,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
@@ -774,6 +805,7 @@ export type UserCreateWithoutCoveragePartnersCreatedInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationCreateNestedManyWithoutUserInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
 }
@@ -792,6 +824,7 @@ export type UserUncheckedCreateWithoutCoveragePartnersCreatedInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedCreateNestedManyWithoutUserInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
 }
@@ -815,6 +848,7 @@ export type UserCreateWithoutCoveragePartnersUpdatedInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
 }
@@ -833,6 +867,7 @@ export type UserUncheckedCreateWithoutCoveragePartnersUpdatedInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
 }
@@ -867,6 +902,7 @@ export type UserUpdateWithoutCoveragePartnersCreatedInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUpdateManyWithoutUserNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
 }
@@ -885,6 +921,7 @@ export type UserUncheckedUpdateWithoutCoveragePartnersCreatedInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedUpdateManyWithoutUserNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
 }
@@ -914,6 +951,7 @@ export type UserUpdateWithoutCoveragePartnersUpdatedInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
 }
@@ -932,6 +970,7 @@ export type UserUncheckedUpdateWithoutCoveragePartnersUpdatedInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
   coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
 }
@@ -950,6 +989,7 @@ export type UserCreateWithoutCoverageLayersUploadedInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
 }
@@ -968,6 +1008,7 @@ export type UserUncheckedCreateWithoutCoverageLayersUploadedInput = {
   updatedBy?: string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedCreateNestedManyWithoutUserInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
 }
@@ -1002,6 +1043,7 @@ export type UserUpdateWithoutCoverageLayersUploadedInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
 }
@@ -1020,8 +1062,101 @@ export type UserUncheckedUpdateWithoutCoverageLayersUploadedInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  viabilityConsultations?: Prisma.ViabilityConsultationUncheckedUpdateManyWithoutUserNestedInput
   coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
   coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutViabilityConsultationsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserUncheckedCreateWithoutViabilityConsultationsInput = {
+  id?: string
+  name: string
+  email: string
+  passwordHash: string
+  role: $Enums.UserRole
+  active?: boolean
+  lastLoginAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: string | null
+  updatedBy?: string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutCreatedByInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedCreateNestedManyWithoutUpdatedByInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedCreateNestedManyWithoutUploadedByInput
+}
+
+export type UserCreateOrConnectWithoutViabilityConsultationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutViabilityConsultationsInput, Prisma.UserUncheckedCreateWithoutViabilityConsultationsInput>
+}
+
+export type UserUpsertWithoutViabilityConsultationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutViabilityConsultationsInput, Prisma.UserUncheckedUpdateWithoutViabilityConsultationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutViabilityConsultationsInput, Prisma.UserUncheckedCreateWithoutViabilityConsultationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutViabilityConsultationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutViabilityConsultationsInput, Prisma.UserUncheckedUpdateWithoutViabilityConsultationsInput>
+}
+
+export type UserUpdateWithoutViabilityConsultationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUpdateManyWithoutUploadedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutViabilityConsultationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  coveragePartnersCreated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutCreatedByNestedInput
+  coveragePartnersUpdated?: Prisma.CoveragePartnerUncheckedUpdateManyWithoutUpdatedByNestedInput
+  coverageLayersUploaded?: Prisma.CoverageLayerUncheckedUpdateManyWithoutUploadedByNestedInput
 }
 
 
@@ -1032,6 +1167,7 @@ export type UserUncheckedUpdateWithoutCoverageLayersUploadedInput = {
 export type UserCountOutputType = {
   refreshTokens: number
   auditLogs: number
+  viabilityConsultations: number
   coveragePartnersCreated: number
   coveragePartnersUpdated: number
   coverageLayersUploaded: number
@@ -1040,6 +1176,7 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+  viabilityConsultations?: boolean | UserCountOutputTypeCountViabilityConsultationsArgs
   coveragePartnersCreated?: boolean | UserCountOutputTypeCountCoveragePartnersCreatedArgs
   coveragePartnersUpdated?: boolean | UserCountOutputTypeCountCoveragePartnersUpdatedArgs
   coverageLayersUploaded?: boolean | UserCountOutputTypeCountCoverageLayersUploadedArgs
@@ -1067,6 +1204,13 @@ export type UserCountOutputTypeCountRefreshTokensArgs<ExtArgs extends runtime.Ty
  */
 export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AuditLogWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountViabilityConsultationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ViabilityConsultationWhereInput
 }
 
 /**
@@ -1105,6 +1249,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedBy?: boolean
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  viabilityConsultations?: boolean | Prisma.User$viabilityConsultationsArgs<ExtArgs>
   coveragePartnersCreated?: boolean | Prisma.User$coveragePartnersCreatedArgs<ExtArgs>
   coveragePartnersUpdated?: boolean | Prisma.User$coveragePartnersUpdatedArgs<ExtArgs>
   coverageLayersUploaded?: boolean | Prisma.User$coverageLayersUploadedArgs<ExtArgs>
@@ -1157,6 +1302,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  viabilityConsultations?: boolean | Prisma.User$viabilityConsultationsArgs<ExtArgs>
   coveragePartnersCreated?: boolean | Prisma.User$coveragePartnersCreatedArgs<ExtArgs>
   coveragePartnersUpdated?: boolean | Prisma.User$coveragePartnersUpdatedArgs<ExtArgs>
   coverageLayersUploaded?: boolean | Prisma.User$coverageLayersUploadedArgs<ExtArgs>
@@ -1170,6 +1316,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    viabilityConsultations: Prisma.$ViabilityConsultationPayload<ExtArgs>[]
     coveragePartnersCreated: Prisma.$CoveragePartnerPayload<ExtArgs>[]
     coveragePartnersUpdated: Prisma.$CoveragePartnerPayload<ExtArgs>[]
     coverageLayersUploaded: Prisma.$CoverageLayerPayload<ExtArgs>[]
@@ -1585,6 +1732,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  viabilityConsultations<T extends Prisma.User$viabilityConsultationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$viabilityConsultationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ViabilityConsultationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   coveragePartnersCreated<T extends Prisma.User$coveragePartnersCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coveragePartnersCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoveragePartnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   coveragePartnersUpdated<T extends Prisma.User$coveragePartnersUpdatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coveragePartnersUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoveragePartnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   coverageLayersUploaded<T extends Prisma.User$coverageLayersUploadedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coverageLayersUploadedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoverageLayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2066,6 +2214,30 @@ export type User$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * User.viabilityConsultations
+ */
+export type User$viabilityConsultationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ViabilityConsultation
+   */
+  select?: Prisma.ViabilityConsultationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ViabilityConsultation
+   */
+  omit?: Prisma.ViabilityConsultationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ViabilityConsultationInclude<ExtArgs> | null
+  where?: Prisma.ViabilityConsultationWhereInput
+  orderBy?: Prisma.ViabilityConsultationOrderByWithRelationInput | Prisma.ViabilityConsultationOrderByWithRelationInput[]
+  cursor?: Prisma.ViabilityConsultationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ViabilityConsultationScalarFieldEnum | Prisma.ViabilityConsultationScalarFieldEnum[]
 }
 
 /**

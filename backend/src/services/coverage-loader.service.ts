@@ -138,6 +138,7 @@ export async function loadCoverageIntoMemory(
       layerName: sourceFile,
       partnerId: "legacy",
       partnerName: "Arquivo local (legado)",
+      partnerCode: "LEGACY",
       version: null,
       areas: result.areas,
       polygonCount: result.totalPolygons,

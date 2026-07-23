@@ -75,6 +75,7 @@ export function assertTestDatabase(
 export async function resetAppDatabase(): Promise<void> {
   assertTestDatabase();
   await prisma.auditLog.deleteMany();
+  await prisma.viabilityConsultation.deleteMany();
   await prisma.refreshToken.deleteMany();
   await prisma.user.deleteMany();
 }
@@ -114,4 +115,28 @@ export async function loginAs(
     .map((c: string) => c.split(";")[0])
     .find((c: string) => c.startsWith("viability.refresh="));
   return { accessToken: res.body.accessToken, refreshCookie: refreshCookie ?? "" };
+}
+
+/**
+ * Fluxo completo da confirmacao do marcador (v0.4.0 revisao): primeiro o
+ * /check geocodifica (provider dev => ADDRESS_AMBIGUOUS) e devolve o
+ * locationConfirmationToken; em seguida o /confirm-location envia o token
+ * junto do adjustedLocation.
+ */
+export async function confirmLocationAs(
+  app: import("express").Express,
+  accessToken: string,
+  address: Record<string, unknown>,
+  adjustedLocation: { latitude: number; longitude: number }
+): Promise<import("supertest").Response> {
+  const request = (await import("supertest")).default;
+  const first = await request(app)
+    .post("/api/viabilities/check")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ address });
+  const token = first.body.locationConfirmationToken as string | undefined;
+  return request(app)
+    .post("/api/viabilities/confirm-location")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ address, adjustedLocation, locationConfirmationToken: token });
 }

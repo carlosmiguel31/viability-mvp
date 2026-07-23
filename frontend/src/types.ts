@@ -1,3 +1,10 @@
+export type GeocodingLocationType =
+  | "ROOFTOP"
+  | "RANGE_INTERPOLATED"
+  | "GEOMETRIC_CENTER"
+  | "APPROXIMATE"
+  | "UNKNOWN";
+
 /** A mancha KML/KMZ decide: dentro → viável preliminarmente; fora → sem cobertura. */
 export type ViabilityStatus =
   | "PRELIMINARILY_VIABLE"
@@ -95,7 +102,10 @@ export interface AddressViabilityResponse {
     formattedAddress: string;
     confidence: "HIGH" | "MEDIUM" | "LOW";
     partialMatch: boolean;
+    locationType: GeocodingLocationType;
   };
+  /** Token opaco p/ confirmar/ajustar o marcador (curta duração, só em memória). */
+  locationConfirmationToken?: string;
   coverage: {
     insideCoverage: boolean;
     primaryArea: CoverageAreaSummary | null;
@@ -105,6 +115,8 @@ export interface AddressViabilityResponse {
   alternatives: PublicNetworkLocation[];
   requiresTechnicalConfirmation: boolean;
   analysisBasis: string;
+  /** Registro do histórico criado para esta consulta (v0.4.0). */
+  consultation?: ConsultationRef;
 }
 
 export interface CoverageStatus {
@@ -221,4 +233,116 @@ export interface AuditLogPage {
   total: number;
   page: number;
   pageSize: number;
+}
+
+// ── Histórico de consultas (v0.4.0) ──────────────────────────
+export interface ConsultationRef {
+  id: string;
+  protocol: string;
+  createdAt: string;
+}
+
+export interface ConsultationSummary {
+  id: string;
+  protocol: string;
+  status: ViabilityStatus | string;
+  address: {
+    postalCode: string | null;
+    street: string;
+    number: string;
+    neighborhood: string | null;
+    city: string;
+    state: string;
+  };
+  user: { id: string; name: string } | null;
+  coverageMatchCount: number;
+  networkReferenceStatus: NetworkReferenceStatus | string;
+  createdAt: string;
+  durationMs: number | null;
+}
+
+export interface ConsultationsPage {
+  consultations: ConsultationSummary[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface ConsultationCoverageMatchSnapshot {
+  partnerId: string;
+  partnerName: string;
+  partnerCode: string | null;
+  layerId: string;
+  layerName: string;
+  version: string | null;
+}
+
+export interface ConsultationDetail {
+  id: string;
+  protocol: string;
+  status: ViabilityStatus | string;
+  resultMessage: string;
+  createdAt: string;
+  completedAt: string | null;
+  durationMs: number | null;
+  user: { id: string; name: string; email: string } | null;
+  address: {
+    postalCode: string | null;
+    street: string;
+    number: string;
+    complement: string | null;
+    neighborhood: string | null;
+    city: string;
+    state: string;
+  };
+  geocoding: {
+    provider: string;
+    geocodedAddress: string | null;
+    confidence: "HIGH" | "MEDIUM" | "LOW" | null;
+    locationType: GeocodingLocationType | null;
+    partialMatch: boolean;
+    latitude: number | null;
+    longitude: number | null;
+  };
+  confirmation: {
+    latitude: number | null;
+    longitude: number | null;
+    confirmedManually: boolean;
+    confirmationRequired: boolean;
+  };
+  coverage: {
+    matches: ConsultationCoverageMatchSnapshot[];
+    matchCount: number;
+    configured: boolean;
+    snapshotBuiltAt: string | null;
+  };
+  network: {
+    status: NetworkReferenceStatus | string;
+    reference: {
+      latitude: number;
+      longitude: number;
+      distanceMeters: number;
+      identificationStatus: string;
+      identifiers: Array<{ id: string; code: string }>;
+    } | null;
+    alternatives: Array<{ distanceMeters: number }>;
+    searchRadiusMeters: number | null;
+  };
+  source: string | null;
+}
+
+export interface ConsultationListParams {
+  search?: string;
+  protocol?: string;
+  status?: string;
+  userId?: string;
+  postalCode?: string;
+  city?: string;
+  state?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  hasCoverage?: "" | "true" | "false";
+  networkReferenceStatus?: string;
+  page?: number;
+  sortOrder?: "asc" | "desc";
 }

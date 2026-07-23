@@ -149,6 +149,7 @@ export interface AddressViabilityResponse {
     formattedAddress: string;
     confidence: "HIGH" | "MEDIUM" | "LOW";
     partialMatch: boolean;
+    locationType: "ROOFTOP" | "RANGE_INTERPOLATED" | "GEOMETRIC_CENTER" | "APPROXIMATE" | "UNKNOWN";
   };
   coverage: {
     insideCoverage: boolean;
@@ -159,4 +160,6 @@ export interface AddressViabilityResponse {
   alternatives: PublicNetworkLocation[];
   requiresTechnicalConfirmation: boolean;
   analysisBasis: string;
+  /** Preenchido pelo controller apos persistir o historico (v0.4.0). */
+  consultation?: { id: string; protocol: string; createdAt: Date };
 }

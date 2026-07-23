@@ -84,8 +84,35 @@ function NetworkLocationDetails({ location }: { location: PublicNetworkLocation 
   );
 }
 
+/** Copia com clipboard API e fallback seguro (textarea temporário). */
+export async function copyTextToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // segue para o fallback
+  }
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand("copy");
+    textarea.remove();
+    return copied;
+  } catch {
+    return false;
+  }
+}
+
 export default function ResultPanel({ result }: Props) {
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
+  const [protocolCopied, setProtocolCopied] = useState(false);
   const meta = STATUS_META[result.status] ?? STATUS_META.COVERAGE_NOT_LOADED;
   const location = result.nearestNetworkLocation;
   const { coverage, searchedAddress } = result;
@@ -106,6 +133,27 @@ export default function ResultPanel({ result }: Props) {
       </div>
 
       <p className="mt-3 text-sm">{result.message}</p>
+
+      {result.consultation && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded bg-ink/[0.03] px-3 py-2">
+          <p className="text-xs text-ink/70">
+            <span className="font-semibold">Protocolo:</span>{" "}
+            <span className="font-mono">{result.consultation.protocol}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              void copyTextToClipboard(result.consultation!.protocol).then((copied) => {
+                setProtocolCopied(copied);
+                if (copied) window.setTimeout(() => setProtocolCopied(false), 2500);
+              });
+            }}
+            className="rounded border border-ink/20 px-2 py-1 text-[11px] text-ink/70 transition hover:bg-ink/5"
+          >
+            {protocolCopied ? "Copiado!" : "Copiar protocolo"}
+          </button>
+        </div>
+      )}
 
       <p className="mt-2 text-xs text-ink/60">
         <span className="font-semibold">Endereço consultado:</span>{" "}

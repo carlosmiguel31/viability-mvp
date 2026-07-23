@@ -55,7 +55,8 @@ export const ModelName = {
   RefreshToken: 'RefreshToken',
   AuditLog: 'AuditLog',
   CoveragePartner: 'CoveragePartner',
-  CoverageLayer: 'CoverageLayer'
+  CoverageLayer: 'CoverageLayer',
+  ViabilityConsultation: 'ViabilityConsultation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -159,6 +160,49 @@ export const CoverageLayerScalarFieldEnum = {
 export type CoverageLayerScalarFieldEnum = (typeof CoverageLayerScalarFieldEnum)[keyof typeof CoverageLayerScalarFieldEnum]
 
 
+export const ViabilityConsultationScalarFieldEnum = {
+  id: 'id',
+  protocol: 'protocol',
+  userId: 'userId',
+  status: 'status',
+  resultMessage: 'resultMessage',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt',
+  durationMs: 'durationMs',
+  postalCode: 'postalCode',
+  street: 'street',
+  number: 'number',
+  complement: 'complement',
+  neighborhood: 'neighborhood',
+  city: 'city',
+  state: 'state',
+  geocodingProvider: 'geocodingProvider',
+  geocodedAddress: 'geocodedAddress',
+  geocodingConfidence: 'geocodingConfidence',
+  geocodingLocationType: 'geocodingLocationType',
+  geocodingPartialMatch: 'geocodingPartialMatch',
+  geocodedLatitude: 'geocodedLatitude',
+  geocodedLongitude: 'geocodedLongitude',
+  confirmedLatitude: 'confirmedLatitude',
+  confirmedLongitude: 'confirmedLongitude',
+  locationConfirmedManually: 'locationConfirmedManually',
+  confirmationRequired: 'confirmationRequired',
+  coverageMatches: 'coverageMatches',
+  coverageMatchCount: 'coverageMatchCount',
+  coverageConfigured: 'coverageConfigured',
+  coverageSnapshotBuiltAt: 'coverageSnapshotBuiltAt',
+  networkReferenceStatus: 'networkReferenceStatus',
+  networkReference: 'networkReference',
+  networkAlternatives: 'networkAlternatives',
+  networkSearchRadiusMeters: 'networkSearchRadiusMeters',
+  requestId: 'requestId',
+  source: 'source',
+  errorCode: 'errorCode'
+} as const
+
+export type ViabilityConsultationScalarFieldEnum = (typeof ViabilityConsultationScalarFieldEnum)[keyof typeof ViabilityConsultationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -173,6 +217,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

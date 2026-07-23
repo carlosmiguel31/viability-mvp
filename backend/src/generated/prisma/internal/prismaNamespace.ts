@@ -401,7 +401,8 @@ export const ModelName = {
   RefreshToken: 'RefreshToken',
   AuditLog: 'AuditLog',
   CoveragePartner: 'CoveragePartner',
-  CoverageLayer: 'CoverageLayer'
+  CoverageLayer: 'CoverageLayer',
+  ViabilityConsultation: 'ViabilityConsultation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "auditLog" | "coveragePartner" | "coverageLayer"
+    modelProps: "user" | "refreshToken" | "auditLog" | "coveragePartner" | "coverageLayer" | "viabilityConsultation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -791,6 +792,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ViabilityConsultation: {
+      payload: Prisma.$ViabilityConsultationPayload<ExtArgs>
+      fields: Prisma.ViabilityConsultationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ViabilityConsultationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ViabilityConsultationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>
+        }
+        findFirst: {
+          args: Prisma.ViabilityConsultationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ViabilityConsultationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>
+        }
+        findMany: {
+          args: Prisma.ViabilityConsultationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>[]
+        }
+        create: {
+          args: Prisma.ViabilityConsultationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>
+        }
+        createMany: {
+          args: Prisma.ViabilityConsultationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ViabilityConsultationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>[]
+        }
+        delete: {
+          args: Prisma.ViabilityConsultationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>
+        }
+        update: {
+          args: Prisma.ViabilityConsultationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ViabilityConsultationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ViabilityConsultationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ViabilityConsultationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ViabilityConsultationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationPayload>
+        }
+        aggregate: {
+          args: Prisma.ViabilityConsultationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateViabilityConsultation>
+        }
+        groupBy: {
+          args: Prisma.ViabilityConsultationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityConsultationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ViabilityConsultationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityConsultationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -915,6 +990,49 @@ export const CoverageLayerScalarFieldEnum = {
 export type CoverageLayerScalarFieldEnum = (typeof CoverageLayerScalarFieldEnum)[keyof typeof CoverageLayerScalarFieldEnum]
 
 
+export const ViabilityConsultationScalarFieldEnum = {
+  id: 'id',
+  protocol: 'protocol',
+  userId: 'userId',
+  status: 'status',
+  resultMessage: 'resultMessage',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt',
+  durationMs: 'durationMs',
+  postalCode: 'postalCode',
+  street: 'street',
+  number: 'number',
+  complement: 'complement',
+  neighborhood: 'neighborhood',
+  city: 'city',
+  state: 'state',
+  geocodingProvider: 'geocodingProvider',
+  geocodedAddress: 'geocodedAddress',
+  geocodingConfidence: 'geocodingConfidence',
+  geocodingLocationType: 'geocodingLocationType',
+  geocodingPartialMatch: 'geocodingPartialMatch',
+  geocodedLatitude: 'geocodedLatitude',
+  geocodedLongitude: 'geocodedLongitude',
+  confirmedLatitude: 'confirmedLatitude',
+  confirmedLongitude: 'confirmedLongitude',
+  locationConfirmedManually: 'locationConfirmedManually',
+  confirmationRequired: 'confirmationRequired',
+  coverageMatches: 'coverageMatches',
+  coverageMatchCount: 'coverageMatchCount',
+  coverageConfigured: 'coverageConfigured',
+  coverageSnapshotBuiltAt: 'coverageSnapshotBuiltAt',
+  networkReferenceStatus: 'networkReferenceStatus',
+  networkReference: 'networkReference',
+  networkAlternatives: 'networkAlternatives',
+  networkSearchRadiusMeters: 'networkSearchRadiusMeters',
+  requestId: 'requestId',
+  source: 'source',
+  errorCode: 'errorCode'
+} as const
+
+export type ViabilityConsultationScalarFieldEnum = (typeof ViabilityConsultationScalarFieldEnum)[keyof typeof ViabilityConsultationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -929,6 +1047,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1236,6 +1361,7 @@ export type GlobalOmitConfig = {
   auditLog?: Prisma.AuditLogOmit
   coveragePartner?: Prisma.CoveragePartnerOmit
   coverageLayer?: Prisma.CoverageLayerOmit
+  viabilityConsultation?: Prisma.ViabilityConsultationOmit
 }
 
 /* Types for Logging */

@@ -1,4 +1,4 @@
-import { apiJson } from "./auth";
+import { apiFetch, apiJson, ApiError } from "./auth";
 
 export { ApiError } from "./auth";
 import {
@@ -14,6 +14,9 @@ import {
   CoverageProcessingStatus,
   CoverageReloadSummary,
   CoverageStatus,
+  ConsultationDetail,
+  ConsultationListParams,
+  ConsultationsPage,
   GeographicCoordinate,
   PostalCodeAddress,
   PublicUser,
@@ -36,9 +39,12 @@ function toAddressPayload(values: AddressFormValues) {
 
 export function checkViabilityByAddress(
   values: AddressFormValues,
-  adjustedLocation?: GeographicCoordinate
+  adjustedLocation?: GeographicCoordinate,
+  locationConfirmationToken?: string
 ): Promise<AddressViabilityResponse> {
-  // Ajuste/confirmacao do marcador usa o endpoint dedicado.
+  // Ajuste/confirmacao do marcador usa o endpoint dedicado e envia o token
+  // opaco emitido na geocodificacao (o backend valida assinatura/expiracao/
+  // usuario/endereco; nunca confiamos em campos soltos de geocodificacao).
   const path = adjustedLocation ? "/api/viabilities/confirm-location" : "/api/viabilities/check";
   return apiJson<AddressViabilityResponse>(path, {
     method: "POST",
@@ -46,6 +52,7 @@ export function checkViabilityByAddress(
     body: JSON.stringify({
       address: toAddressPayload(values),
       ...(adjustedLocation ? { adjustedLocation } : {}),
+      ...(adjustedLocation && locationConfirmationToken ? { locationConfirmationToken } : {}),
     }),
   });
 }
@@ -258,4 +265,73 @@ export function deleteCoverageLayer(id: string): Promise<void> {
 
 export function reloadCoverageSnapshot(): Promise<CoverageReloadSummary> {
   return apiJson<CoverageReloadSummary>("/api/coverage/reload", { method: "POST" });
+}
+
+// ── Histórico de consultas (v0.4.0) ───────────────────────────
+function consultationQuery(params: ConsultationListParams): URLSearchParams {
+  const query = new URLSearchParams();
+  // Filtros vazios não são enviados.
+  if (params.search) query.set("search", params.search);
+  if (params.protocol) query.set("protocol", params.protocol);
+  if (params.status) query.set("status", params.status);
+  if (params.userId) query.set("userId", params.userId);
+  if (params.postalCode) query.set("postalCode", params.postalCode);
+  if (params.city) query.set("city", params.city);
+  if (params.state) query.set("state", params.state);
+  if (params.dateFrom) query.set("dateFrom", params.dateFrom);
+  if (params.dateTo) query.set("dateTo", params.dateTo);
+  if (params.hasCoverage) query.set("hasCoverage", params.hasCoverage);
+  if (params.networkReferenceStatus) {
+    query.set("networkReferenceStatus", params.networkReferenceStatus);
+  }
+  query.set("page", String(params.page ?? 1));
+  query.set("limit", "20");
+  if (params.sortOrder) query.set("sortOrder", params.sortOrder);
+  return query;
+}
+
+export function listConsultations(params: ConsultationListParams): Promise<ConsultationsPage> {
+  return apiJson<ConsultationsPage>(`/api/consultations?${consultationQuery(params).toString()}`);
+}
+
+export function getConsultation(id: string): Promise<{ consultation: ConsultationDetail }> {
+  return apiJson(`/api/consultations/${id}`);
+}
+
+export function getConsultationByProtocol(
+  protocol: string
+): Promise<{ consultation: ConsultationDetail }> {
+  return apiJson(`/api/consultations/protocol/${encodeURIComponent(protocol)}`);
+}
+
+/**
+ * Exportação CSV (somente ADMIN): recebe o Blob autenticado, cria uma URL
+ * temporária, dispara o download e revoga a URL em seguida.
+ */
+export async function exportConsultations(params: ConsultationListParams): Promise<void> {
+  const response = await apiFetch(
+    `/api/consultations/export?${consultationQuery(params).toString()}`
+  );
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as {
+      error?: { code?: string; message?: string };
+    } | null;
+    throw new ApiError(
+      body?.error?.message ?? "Falha ao exportar as consultas.",
+      body?.error?.code ?? "EXPORT_FAILED",
+      response.status
+    );
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  try {
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `consultas-viabilidade-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }

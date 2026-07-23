@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { z } from "zod";
+import { isValidIanaTimeZone } from "../utils/timezone";
 
 dotenv.config();
 
@@ -37,6 +38,19 @@ const envSchema = z
     MAX_KML_BYTES: z.coerce.number().int().positive().default(52_428_800),
 
     CORS_ALLOWED_ORIGINS: z.string().optional().default("http://localhost:5173"),
+
+    /** Historico de consultas (v0.4.0). */
+    CONSULTATION_EXPORT_MAX_ROWS: z.coerce.number().int().positive().default(10000),
+    CONSULTATION_RETENTION_DAYS: z.coerce.number().int().positive().default(365),
+    /** Fuso IANA usado para interpretar dateFrom/dateTo do historico. */
+    CONSULTATION_TIME_ZONE: z
+      .string()
+      .default("America/Sao_Paulo")
+      .refine(isValidIanaTimeZone, "CONSULTATION_TIME_ZONE deve ser um fuso IANA válido."),
+    /** Assinatura dos tokens de confirmacao de localizacao (>= 32 chars). */
+    LOCATION_CONFIRMATION_SECRET: z
+      .string()
+      .min(32, "LOCATION_CONFIRMATION_SECRET deve ter no mínimo 32 caracteres."),
 
     /** Armazenamento dos arquivos KML/KMZ das camadas (fora do banco). */
     COVERAGE_STORAGE_PATH: z.string().default("./storage/coverage"),

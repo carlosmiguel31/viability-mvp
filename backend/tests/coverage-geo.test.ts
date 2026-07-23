@@ -23,6 +23,7 @@ describe("point-in-polygon com o fixture de cobertura", () => {
         layerName: "manchas.kml",
         partnerId: "legacy",
         partnerName: "Arquivo local (legado)",
+        partnerCode: "LEGACY",
         version: null,
         areas: result.areas,
         polygonCount: result.totalPolygons,

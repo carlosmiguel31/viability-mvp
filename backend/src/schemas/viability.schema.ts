@@ -32,6 +32,7 @@ export const viabilityCheckAddressSchema = z.object({
    * Presente somente quando o operador confirmou/ajustou o marcador no mapa.
    * Usado apenas naquela consulta; dispensa nova geocodificacao.
    */
+  locationConfirmationToken: z.string().max(4096).optional(),
   adjustedLocation: coordinateSchema.optional(),
 });
 

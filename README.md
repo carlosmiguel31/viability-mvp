@@ -684,3 +684,115 @@ disponibilidade estimada, clientes conectados, CPF, CNPJ ou telefone.
 - Cookie de refresh com `SameSite=Strict` pressupõe frontend e API na mesma
   origem (ou atrás do mesmo proxy reverso).
 - O resultado é sempre preliminar e requer validação técnica.
+
+## Histórico de consultas (v0.4.0)
+
+Toda consulta de viabilidade finalizada (viável, fora da cobertura, endereço
+ambíguo, cobertura não configurada, geocodificação indisponível etc.) é
+persistida em um histórico **imutável** antes de a resposta ser enviada — a
+resposta e o registro representam sempre o mesmo resultado. Não existem
+endpoints de edição ou exclusão; renomear, inativar ou excluir camadas nunca
+altera consultas antigas, porque o registro guarda um snapshot com os nomes de
+parceiro/camada e a versão da época.
+
+### Protocolo
+
+Cada consulta recebe um protocolo público no formato `VIA-AAAAMMDD-XXXXXXXX`
+(sufixo de 8 caracteres gerado com `crypto.randomBytes`, alfabeto sem
+caracteres ambíguos; índice `unique` no banco e nova tentativa com novo sufixo
+em caso de colisão). O protocolo nunca muda e o UUID interno não é usado como
+identificador principal. Se a análise terminar mas a gravação falhar, a API
+responde `CONSULTATION_HISTORY_SAVE_FAILED` (nunca sucesso sem protocolo).
+
+### Permissões
+
+- **ADMIN**: vê todas as consultas, filtra por qualquer usuário e exporta CSV;
+- **OPERATOR** e **TECHNICIAN**: veem todas e abrem detalhes (sem exportar);
+- **VIEWER**: vê e abre somente as próprias consultas — tentar abrir uma
+  consulta alheia (por UUID ou protocolo) responde `CONSULTATION_NOT_FOUND`,
+  a mesma resposta de um registro inexistente, evitando enumeração.
+
+Tudo é aplicado no backend; o frontend apenas esconde o que não se aplica.
+
+### Endpoints
+
+- `GET /api/consultations` — listagem paginada (`page`, `limit` ≤ 100, padrão
+  20) com resumo por item (sem os JSONs detalhados) e filtros: `search`
+  (protocolo, CEP, rua, número, bairro, cidade, nome do responsável),
+  `protocol`, `status`, `userId`, `postalCode`, `city`, `state`, `dateFrom`,
+  `dateTo` (datas `AAAA-MM-DD`, interpretadas como dias inteiros no fuso
+  `CONSULTATION_TIME_ZONE` — padrão `America/Sao_Paulo`; os limites são
+  convertidos para UTC apenas na consulta ao banco, e a exportação CSV usa a
+  mesma regra),
+  `hasCoverage`, `networkReferenceStatus`, `sortOrder`;
+- `GET /api/consultations/:id` e `GET /api/consultations/protocol/:protocol` —
+  detalhes completos (endereço informado/localizado, confiança, coordenadas,
+  ajuste manual, snapshot de cobertura, referência pública do Voalle);
+- `GET /api/consultations/export` — CSV, somente ADMIN, com rate limit
+  próprio.
+
+### Exportação CSV
+
+UTF-8 **com BOM** (abre corretamente no Excel), separador ponto e vírgula,
+aspas e quebras de linha escapadas e proteção contra **CSV injection**
+(células iniciadas por `=`, `+`, `-`, `@`, tabulação ou CR recebem apóstrofo).
+Respeita os mesmos filtros da listagem e o limite
+`CONSULTATION_EXPORT_MAX_ROWS` (padrão 10000; acima disso responde
+`CONSULTATION_EXPORT_LIMIT_EXCEEDED`). Nunca exporta tokens, chaves, caminhos
+internos, `storedFileName`, SQL ou polígonos.
+
+### Retenção e limpeza
+
+`CONSULTATION_RETENTION_DAYS` (padrão 365) define a idade máxima dos
+registros. A limpeza é **manual** (sem agendador e nunca na inicialização):
+
+```bash
+npm run consultations:cleanup -- --dry-run   # apenas conta o que removeria
+npm run consultations:cleanup                # remove de fato, por lotes
+```
+
+Uma limpeza real gera o evento administrativo `CONSULTATION_CLEANUP_EXECUTED`
+com contagens seguras.
+
+### Códigos de erro
+
+`CONSULTATION_NOT_FOUND`, `CONSULTATION_ACCESS_DENIED`,
+`CONSULTATION_HISTORY_SAVE_FAILED`, `CONSULTATION_EXPORT_LIMIT_EXCEEDED`,
+`CONSULTATION_INVALID_DATE_RANGE`, `CONSULTATION_INVALID_FILTER`,
+`CONSULTATION_CLEANUP_FAILED`.
+
+### Variáveis de ambiente novas
+
+```
+CONSULTATION_EXPORT_MAX_ROWS=10000
+CONSULTATION_RETENTION_DAYS=365
+CONSULTATION_TIME_ZONE=America/Sao_Paulo
+LOCATION_CONFIRMATION_SECRET=<mínimo 32 caracteres>
+```
+
+### Confirmação de localização com token assinado
+
+Sempre que uma requisição geocodifica um endereço (inclusive quando a
+confirmação é apenas voluntária), a resposta traz `locationConfirmationToken`:
+um token opaco, assinado com `LOCATION_CONFIRMATION_SECRET` (segredo próprio,
+nunca o refresh token), com validade de 10 minutos e vinculado ao usuário
+autenticado e ao hash do endereço normalizado. Ao confirmar/ajustar o marcador
+o frontend envia esse token junto de `adjustedLocation`; o backend valida
+assinatura, expiração, usuário e endereço — token ausente, adulterado,
+expirado, de outro usuário ou de outro endereço responde
+`LOCATION_CONFIRMATION_INVALID`. O registro histórico da confirmação preserva
+a geocodificação ORIGINAL (endereço localizado, provider, confiança,
+`locationType`, partialMatch e coordenadas geocodificadas) ao lado das
+coordenadas confirmadas pelo usuário. O token nunca é gravado em banco,
+histórico, auditoria ou logs, e fica apenas em memória no frontend. O
+`locationType` do Google (ROOFTOP, RANGE_INTERPOLATED, GEOMETRIC_CENTER,
+APPROXIMATE, UNKNOWN) agora é preservado de ponta a ponta e exibido nos
+detalhes do histórico.
+
+### Como testar
+
+Backend (banco com nome claramente de teste; `deleteMany` nunca roda no banco
+principal): `cd backend && npm test`. Frontend (mocks de API):
+`cd frontend && npm test`. Os testes cobrem persistência por status,
+imutabilidade do snapshot, RBAC por perfil, filtros, CSV (BOM, `;`, aspas,
+formula injection), limite de exportação, auditoria e cleanup.

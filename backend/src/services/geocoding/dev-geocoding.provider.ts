@@ -27,6 +27,7 @@ export class DevGeocodingProvider implements GeocodingProvider {
       confidence: "LOW",
       provider: "dev",
       partialMatch: true,
+      locationType: "UNKNOWN",
     };
   }
 }

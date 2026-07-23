@@ -44,6 +44,7 @@ describe("áreas com nomes como IMPLANTAR", () => {
         layerName: "implantar.kml",
         partnerId: "legacy",
         partnerName: "Arquivo local (legado)",
+        partnerCode: "LEGACY",
         version: null,
         areas: result.areas,
         polygonCount: result.totalPolygons,

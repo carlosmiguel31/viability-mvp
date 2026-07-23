@@ -43,6 +43,7 @@ describe("GoogleGeocodingProvider", () => {
     expect(result.latitude).toBeCloseTo(-19.9878, 6);
     expect(result.longitude).toBeCloseTo(-44.0128, 6);
     expect(result.confidence).toBe("HIGH");
+    expect(result.locationType).toBe("ROOFTOP"); // location_type bruto preservado
     expect(result.partialMatch).toBe(false);
     expect(result.provider).toBe("google");
 
@@ -78,6 +79,7 @@ describe("GoogleGeocodingProvider", () => {
     const result = await provider.geocodeAddress(address);
     expect(result.partialMatch).toBe(true);
     expect(result.confidence).toBe("LOW");
+    expect(result.locationType).toBe("APPROXIMATE");
     env.GOOGLE_GEOCODING_API_KEY = "";
   });
 

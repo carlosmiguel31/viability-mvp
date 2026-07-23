@@ -9,6 +9,7 @@ export interface CoverageSnapshotLayer {
   layerName: string;
   partnerId: string;
   partnerName: string;
+  partnerCode: string;
   version: string | null;
   areas: CoverageArea[];
   polygonCount: number;

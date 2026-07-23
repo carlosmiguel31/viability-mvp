@@ -40,6 +40,7 @@ model User {
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
 
+  viabilityConsultations ViabilityConsultation[] @relation("ViabilityConsultationUser")
   coveragePartnersCreated CoveragePartner[] @relation("CoveragePartnerCreatedBy")
   coveragePartnersUpdated CoveragePartner[] @relation("CoveragePartnerUpdatedBy")
   coverageLayersUploaded  CoverageLayer[]   @relation("CoverageLayerUploadedBy")
@@ -147,4 +148,71 @@ model CoverageLayer {
   @@index([partnerId])
   @@index([active, processingStatus])
   @@map("coverage_layers")
+}
+
+/// Historico IMUTAVEL das consultas de viabilidade (v0.4.0). Cada registro
+/// e um snapshot do resultado apresentado no momento da consulta — mudancas
+/// posteriores nas camadas/parceiros NAO alteram consultas antigas. Nunca
+/// armazena credenciais, tokens, respostas brutas do Google, stack traces,
+/// storedFileName nem poligonos.
+model ViabilityConsultation {
+  id            String    @id @default(uuid()) @db.Uuid
+  protocol      String    @unique
+  userId        String?   @db.Uuid
+  user          User?     @relation("ViabilityConsultationUser", fields: [userId], references: [id], onDelete: SetNull)
+  status        String
+  resultMessage String
+  createdAt     DateTime  @default(now())
+  completedAt   DateTime?
+  durationMs    Int?
+
+  // Endereco informado pelo operador
+  postalCode   String?
+  street       String
+  number       String
+  complement   String?
+  neighborhood String?
+  city         String
+  state        String
+
+  // Geocodificacao (somente dados publicos ja expostos pela consulta)
+  geocodingProvider     String
+  geocodedAddress       String?
+  geocodingConfidence   String?
+  geocodingLocationType String?
+  geocodingPartialMatch Boolean @default(false)
+  geocodedLatitude      Float?
+  geocodedLongitude     Float?
+
+  // Confirmacao manual no mapa
+  confirmedLatitude         Float?
+  confirmedLongitude        Float?
+  locationConfirmedManually Boolean @default(false)
+  confirmationRequired      Boolean @default(false)
+
+  // Snapshot da cobertura no momento da consulta
+  coverageMatches         Json
+  coverageMatchCount      Int       @default(0)
+  coverageConfigured      Boolean   @default(false)
+  coverageSnapshotBuiltAt DateTime?
+
+  // Referencia de rede (Voalle) — somente dados publicos permitidos
+  networkReferenceStatus     String
+  networkReference           Json?
+  networkAlternatives        Json
+  networkSearchRadiusMeters  Int?
+
+  // Metadados seguros
+  requestId String?
+  source    String?
+  errorCode String?
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([status])
+  @@index([postalCode])
+  @@index([city])
+  @@index([state])
+  @@index([networkReferenceStatus])
+  @@map("viability_consultations")
 }
