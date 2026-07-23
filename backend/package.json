@@ -1,0 +1,54 @@
+{
+  "name": "viability-backend",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Manchas de cobertura KML/KMZ em memória e pontos de rede do Voalle",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src tests --ext .ts",
+    "seed": "tsx prisma/seed.ts",
+    "auth:cleanup": "tsx src/scripts/auth-cleanup.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.9.0",
+    "@prisma/client": "^7.9.0",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.6.0",
+    "fast-xml-parser": "^4.4.1",
+    "fflate": "^0.8.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.6",
+    "@types/supertest": "^6.0.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "eslint": "^8.57.0",
+    "prisma": "^7.9.0",
+    "supertest": "^7.0.0",
+    "tsx": "^4.23.1",
+    "typescript": "5.5.4",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}

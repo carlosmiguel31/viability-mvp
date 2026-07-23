@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-[#f4f6f5] text-ink font-body antialiased;
+}
+
+.leaflet-container {
+  font: inherit;
+}

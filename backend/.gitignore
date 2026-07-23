@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.tsbuildinfo
+
+# Arquivos reais de cobertura nunca devem ser versionados
+data/*.kml
+data/*.kmz
+!data/rede-neutra-mancha-demo.kml
+!data/.gitkeep

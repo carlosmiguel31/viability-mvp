@@ -1,0 +1,83 @@
+// ─────────────────────────────────────────────────────────────
+// BANCO DA APLICAÇÃO (leitura e escrita): usuários, sessões
+// (refresh tokens) e auditoria. Conexão: APP_DATABASE_URL.
+//
+// O banco do Voalle NÃO passa pelo Prisma: é acessado somente
+// para leitura via pg parametrizado em
+// src/repositories/voalle.repository.ts (VOALLE_DB_*).
+// ─────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  TECHNICIAN
+  VIEWER
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  /// Sempre armazenado normalizado em minúsculas; unicidade case-insensitive.
+  email        String    @unique
+  passwordHash String
+  role         UserRole
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  createdBy    String?   @db.Uuid
+  updatedBy    String?   @db.Uuid
+
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+/// Sessões de renovação: guarda SOMENTE o hash SHA-256 do token, nunca o
+/// token puro. familyId permite revogar a cadeia inteira ao detectar reuso.
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  familyId  String    @db.Uuid
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+  /// ROTATED = consumido por renovacao (janela de graca de corrida se aplica);
+  /// SECURITY = revogado por logout, inativacao, troca/reset de senha ou reuso.
+  revokedReason String?
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+/// Auditoria: nunca guarda senhas, hashes, tokens, chaves, credenciais do
+/// Voalle ou o conteúdo completo de endereços consultados.
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

@@ -1,0 +1,134 @@
+import { apiJson } from "./auth";
+
+export { ApiError } from "./auth";
+import {
+  AddressFormValues,
+  AddressViabilityResponse,
+  AuditLogPage,
+  CoverageAreaWithPolygons,
+  CoverageStatus,
+  GeographicCoordinate,
+  PostalCodeAddress,
+  PublicUser,
+  UserRole,
+  UsersPage,
+} from "./types";
+
+function toAddressPayload(values: AddressFormValues) {
+  return {
+    postalCode: values.postalCode || null,
+    street: values.street,
+    number: values.number,
+    complement: values.complement || null,
+    neighborhood: values.neighborhood || null,
+    city: values.city,
+    state: values.state,
+    country: "Brasil",
+  };
+}
+
+export function checkViabilityByAddress(
+  values: AddressFormValues,
+  adjustedLocation?: GeographicCoordinate
+): Promise<AddressViabilityResponse> {
+  // Ajuste/confirmacao do marcador usa o endpoint dedicado.
+  const path = adjustedLocation ? "/api/viabilities/confirm-location" : "/api/viabilities/check";
+  return apiJson<AddressViabilityResponse>(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      address: toAddressPayload(values),
+      ...(adjustedLocation ? { adjustedLocation } : {}),
+    }),
+  });
+}
+
+export function lookupPostalCode(cep: string): Promise<PostalCodeAddress> {
+  return apiJson<PostalCodeAddress>(`/api/addresses/postal-code/${cep.replace(/\D/g, "")}`);
+}
+
+export function fetchCoverageStatus(): Promise<CoverageStatus> {
+  return apiJson<CoverageStatus>("/api/coverage/status");
+}
+
+export function fetchCoverageAreas(): Promise<{ areas: CoverageAreaWithPolygons[] }> {
+  return apiJson<{ areas: CoverageAreaWithPolygons[] }>("/api/coverage/areas");
+}
+
+// ── Administração (ADMIN) ─────────────────────────────────────
+export function listUsers(params: {
+  search?: string;
+  role?: UserRole | "";
+  active?: "" | "true" | "false";
+  page?: number;
+}): Promise<UsersPage> {
+  const query = new URLSearchParams();
+  if (params.search) query.set("search", params.search);
+  if (params.role) query.set("role", params.role);
+  if (params.active) query.set("active", params.active);
+  query.set("page", String(params.page ?? 1));
+  query.set("pageSize", "20");
+  return apiJson<UsersPage>(`/api/users?${query.toString()}`);
+}
+
+export function createUser(input: {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  active: boolean;
+}): Promise<{ user: PublicUser }> {
+  return apiJson("/api/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateUser(
+  id: string,
+  input: { name?: string; email?: string; role?: UserRole }
+): Promise<{ user: PublicUser }> {
+  return apiJson(`/api/users/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function setUserStatus(
+  id: string,
+  active: boolean,
+  confirmSelfDeactivation?: boolean
+): Promise<{ user: PublicUser }> {
+  return apiJson(`/api/users/${id}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ active, confirmSelfDeactivation }),
+  });
+}
+
+export function resetUserPassword(id: string, newPassword: string): Promise<void> {
+  return apiJson(`/api/users/${id}/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ newPassword }),
+  });
+}
+
+export function listAuditLogs(params: {
+  page?: number;
+  action?: string;
+  userId?: string;
+  from?: string; // AAAA-MM-DD
+  to?: string; // AAAA-MM-DD (inclusivo)
+}): Promise<AuditLogPage> {
+  const query = new URLSearchParams();
+  query.set("page", String(params.page ?? 1));
+  query.set("pageSize", "20");
+  if (params.action) query.set("action", params.action);
+  if (params.userId) query.set("userId", params.userId);
+  if (params.from) query.set("from", `${params.from}T00:00:00`);
+  if (params.to) query.set("to", `${params.to}T23:59:59.999`);
+  return apiJson<AuditLogPage>(`/api/audit-logs?${query.toString()}`);
+}

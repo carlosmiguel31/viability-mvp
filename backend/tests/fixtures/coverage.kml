@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Manchas de teste</name>
+    <Folder>
+      <name>AREA DE ATENDIMENTO</name>
+      <Placemark>
+        <name>BARREIRO</name>
+        <description>Mancha principal com buraco</description>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>
+                -44.020,-19.990 -44.010,-19.990 -44.010,-19.980 -44.020,-19.980 -44.020,-19.990
+              </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+          <innerBoundaryIs>
+            <LinearRing>
+              <coordinates>
+                -44.016,-19.986 -44.014,-19.986 -44.014,-19.984 -44.016,-19.984 -44.016,-19.986
+              </coordinates>
+            </LinearRing>
+          </innerBoundaryIs>
+        </Polygon>
+      </Placemark>
+      <Placemark>
+        <name>SOBREPOSICAO LESTE</name>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>
+                -44.012,-19.982 -44.005,-19.982 -44.005,-19.975 -44.012,-19.975 -44.012,-19.982
+              </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>EXPANSAO</name>
+      <Placemark>
+        <name>DUAS ILHAS</name>
+        <MultiGeometry>
+          <Polygon>
+            <outerBoundaryIs>
+              <LinearRing>
+                <coordinates>
+                  -44.050,-19.960 -44.045,-19.960 -44.045,-19.955 -44.050,-19.955 -44.050,-19.960
+                </coordinates>
+              </LinearRing>
+            </outerBoundaryIs>
+          </Polygon>
+          <Polygon>
+            <outerBoundaryIs>
+              <LinearRing>
+                <coordinates>
+                  -44.040,-19.960 -44.035,-19.960 -44.035,-19.955 -44.040,-19.955 -44.040,-19.960
+                </coordinates>
+              </LinearRing>
+            </outerBoundaryIs>
+          </Polygon>
+        </MultiGeometry>
+      </Placemark>
+      <Placemark>
+        <name>ROTA DE FIBRA (linha, deve ser ignorada)</name>
+        <LineString>
+          <coordinates>-44.0,-19.9 -44.1,-19.95</coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>PONTO SOLTO (deve ser ignorado)</name>
+        <Point><coordinates>-44.03,-19.95</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>POLIGONO INVALIDO (2 vertices)</name>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>-44.0,-19.9 -44.1,-19.9</coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>
