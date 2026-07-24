@@ -6,6 +6,7 @@ import { viabilityRoutes } from "./routes/viability.routes";
 import { coverageRoutes } from "./routes/coverage.routes";
 import { consultationRoutes } from "./routes/consultation.routes";
 import { dashboardRoutes } from "./routes/dashboard.routes";
+import { reviewRoutes } from "./routes/review.routes";
 import { addressRoutes } from "./routes/address.routes";
 import { authRoutes } from "./routes/auth.routes";
 import { userRoutes } from "./routes/user.routes";
@@ -114,6 +115,7 @@ export function createApp(rateLimits: AppRateLimits = DEFAULT_RATE_LIMITS): expr
   app.use("/api/coverage", coverageRoutes);
   app.use("/api/consultations", consultationRoutes);
   app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/reviews", reviewRoutes);
 
   // Rotas inexistentes retornam JSON amigavel.
   app.use((_req, res) => {

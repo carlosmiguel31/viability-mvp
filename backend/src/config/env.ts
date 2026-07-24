@@ -50,6 +50,42 @@ const envSchema = z
     /** Dashboard (v0.5.0). */
     DASHBOARD_MAX_RANGE_DAYS: z.coerce.number().int().positive().default(730),
 
+    /** Fila de análises técnicas (v0.6.0). */
+    REVIEW_AUTO_CREATE_ENABLED: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((value) => value === "true"),
+    REVIEW_AUTO_CREATE_STATUSES: z
+      .string()
+      .default("ADDRESS_AMBIGUOUS")
+      .transform((value) =>
+        value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean)
+      )
+      .refine(
+        (statuses) =>
+          statuses.every((status) =>
+            [
+              "PRELIMINARILY_VIABLE",
+              "OUTSIDE_COVERAGE",
+              "ADDRESS_AMBIGUOUS",
+              "COVERAGE_NOT_CONFIGURED",
+              "COVERAGE_NOT_LOADED",
+              "ADDRESS_NOT_FOUND",
+              "GEOCODING_UNAVAILABLE",
+            ].includes(status)
+          ),
+        "REVIEW_AUTO_CREATE_STATUSES contém status inexistente."
+      ),
+    REVIEW_DEFAULT_SLA_HOURS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .max(720, "REVIEW_DEFAULT_SLA_HOURS máximo: 720 horas.")
+      .default(24),
+
     /** Assinatura dos tokens de confirmacao de localizacao (>= 32 chars). */
     LOCATION_CONFIRMATION_SECRET: z
       .string()

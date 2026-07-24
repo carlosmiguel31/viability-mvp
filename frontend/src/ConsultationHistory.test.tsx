@@ -447,3 +447,185 @@ describe("protocolo no resultado da consulta", () => {
     expect(screen.queryByRole("button", { name: "Copiar protocolo" })).toBeNull();
   });
 });
+
+describe("diálogos de análise técnica no Histórico", () => {
+  const REVIEW_DETAILS = {
+    id: "r1",
+    consultationId: "c1",
+    status: "OPEN",
+    priority: "NORMAL",
+    openedBy: { id: "u1", name: "Alice Admin", email: "alice@teste.local" },
+    assignedTo: null,
+    resolutionCode: null,
+    resolutionSummary: null,
+    dueAt: "2026-07-26T12:00:00.000Z",
+    startedAt: null,
+    resolvedAt: null,
+    version: 1,
+    createdAt: "2026-07-25T10:00:00.000Z",
+    updatedAt: "2026-07-25T10:00:00.000Z",
+    sla: { overdue: false, remainingMinutes: 600, resolvedWithinSla: null },
+    consultation: {
+      id: "c1",
+      protocol: "VIA-20260723-ABCD2345",
+      status: "PRELIMINARILY_VIABLE",
+      resultMessage: "ok",
+      street: "Rua Exemplo",
+      number: "100",
+      neighborhood: "Barreiro",
+      city: "Belo Horizonte",
+      state: "MG",
+      coverageMatchCount: 1,
+      networkReferenceStatus: "NOT_CHECKED",
+      createdAt: "2026-07-23T12:00:00.000Z",
+      coverage: { matches: [], matchCount: 0 },
+      network: { status: "NOT_CHECKED", reference: null, alternatives: [] },
+    },
+    events: [],
+  };
+
+  function historyHandlers(options: {
+    existingReviewId?: string | null;
+    createStatus?: number;
+  }): FetchHandler[] {
+    return [
+      (url) =>
+        url.includes("/api/consultations?") || url.endsWith("/api/consultations")
+          ? jsonResponse(200, { consultations: [makeSummary()], total: 1, page: 1, limit: 20 })
+          : null,
+      (url) =>
+        url.includes("/api/reviews/by-consultation/c1")
+          ? options.existingReviewId
+            ? jsonResponse(200, {
+                review: {
+                  id: options.existingReviewId,
+                  consultationId: "c1",
+                  status: "OPEN",
+                  priority: "NORMAL",
+                  assignedTo: null,
+                  dueAt: "2026-07-26T12:00:00.000Z",
+                  version: 1,
+                },
+              })
+            : jsonResponse(404, { error: { code: "REVIEW_NOT_FOUND", message: "não há" } })
+          : null,
+      (url, init) =>
+        url.endsWith("/api/reviews") && init?.method === "POST"
+          ? options.createStatus === 409
+            ? jsonResponse(409, {
+                error: { code: "REVIEW_ALREADY_EXISTS", message: "duplicada" },
+              })
+            : jsonResponse(201, { review: REVIEW_DETAILS })
+          : null,
+      (url) =>
+        url.includes("/api/reviews/assignees")
+          ? jsonResponse(200, { users: [] })
+          : null,
+      (url) =>
+        url.includes("/api/reviews/r1")
+          ? jsonResponse(200, { review: REVIEW_DETAILS })
+          : null,
+      (url) =>
+        url.includes("/api/dashboard/users")
+          ? jsonResponse(200, { users: [], total: 0, page: 1, limit: 100 })
+          : null,
+    ];
+  }
+
+  it("Encaminhar para análise abre o ReviewCreateDialog; criar preserva o reviewId e permite abrir os detalhes", async () => {
+    stubFetch(historyHandlers({ existingReviewId: null }));
+    const user = userEvent.setup();
+    render(<ConsultationHistoryPage currentUser={ADMIN} />);
+    const forward = await screen.findByRole("button", { name: "Encaminhar para análise" });
+    await user.click(forward);
+
+    // 1) o formulário abre:
+    const createDialog = await screen.findByRole("dialog", { name: "Encaminhar para análise" });
+    await user.click(within(createDialog).getByRole("button", { name: "Encaminhar" }));
+    expect(await within(createDialog).findByText("Análise criada com sucesso.")).toBeTruthy();
+
+    // 2) reviewId preservado: o botão da linha vira "Abrir análise"
+    // (há também o botão do próprio diálogo de sucesso):
+    expect(
+      (await screen.findAllByRole("button", { name: "Abrir análise" })).length
+    ).toBeGreaterThanOrEqual(2);
+
+    // abrir imediatamente pelos detalhes a partir do próprio formulário:
+    await user.click(within(createDialog).getByRole("button", { name: "Abrir análise" }));
+    // 3) formulário fechado, detalhes abertos:
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Encaminhar para análise" })).toBeNull()
+    );
+    expect(
+      await screen.findByRole("dialog", { name: /Detalhes da análise|Análise/i })
+    ).toBeTruthy();
+    expect(await screen.findByText("Linha do tempo")).toBeTruthy();
+  });
+
+  it("análise já existente NÃO abre o formulário: vai direto aos detalhes", async () => {
+    stubFetch(historyHandlers({ existingReviewId: "r1" }));
+    const user = userEvent.setup();
+    render(<ConsultationHistoryPage currentUser={ADMIN} />);
+    // O rótulo inicial é Encaminhar (mapa vazio); o clique detecta e abre direto.
+    await user.click(await screen.findByRole("button", { name: "Encaminhar para análise" }));
+    expect(await screen.findByText("Linha do tempo")).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "Encaminhar para análise" })).toBeNull();
+    // A linha agora reflete a análise existente:
+    expect(await screen.findByRole("button", { name: "Abrir análise" })).toBeTruthy();
+  });
+
+  it("duplicidade (REVIEW_ALREADY_EXISTS) oferece abrir a análise existente", async () => {
+    // by-consultation responde 404 na primeira checagem (corrida), mas o POST
+    // devolve duplicidade; o diálogo então oferece "Abrir análise".
+    const handlers = historyHandlers({ existingReviewId: null, createStatus: 409 });
+    // Depois do 409 o diálogo consulta by-consultation de novo — aí encontra:
+    let firstLookup = true;
+    handlers[1] = (url) => {
+      if (!url.includes("/api/reviews/by-consultation/c1")) return null;
+      if (firstLookup) {
+        firstLookup = false;
+        return jsonResponse(404, { error: { code: "REVIEW_NOT_FOUND", message: "não há" } });
+      }
+      return jsonResponse(200, {
+        review: {
+          id: "r1",
+          consultationId: "c1",
+          status: "OPEN",
+          priority: "NORMAL",
+          assignedTo: null,
+          dueAt: null,
+          version: 1,
+        },
+      });
+    };
+    stubFetch(handlers);
+    const user = userEvent.setup();
+    render(<ConsultationHistoryPage currentUser={ADMIN} />);
+    await user.click(await screen.findByRole("button", { name: "Encaminhar para análise" }));
+    const createDialog = await screen.findByRole("dialog", { name: "Encaminhar para análise" });
+    await user.click(within(createDialog).getByRole("button", { name: "Encaminhar" }));
+    expect(
+      await within(createDialog).findByText("Esta consulta já possui uma análise técnica.")
+    ).toBeTruthy();
+    // Não fica preso: dá para abrir a existente.
+    await user.click(await within(createDialog).findByRole("button", { name: "Abrir análise" }));
+    expect(await screen.findByText("Linha do tempo")).toBeTruthy();
+  });
+
+  it("fechar os diálogos limpa os estados correspondentes", async () => {
+    stubFetch(historyHandlers({ existingReviewId: null }));
+    const user = userEvent.setup();
+    render(<ConsultationHistoryPage currentUser={ADMIN} />);
+    await user.click(await screen.findByRole("button", { name: "Encaminhar para análise" }));
+    const createDialog = await screen.findByRole("dialog", { name: "Encaminhar para análise" });
+    await user.click(within(createDialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Encaminhar para análise" })).toBeNull()
+    );
+    // Reabrir funciona normalmente (estado limpo):
+    await user.click(screen.getByRole("button", { name: "Encaminhar para análise" }));
+    expect(
+      await screen.findByRole("dialog", { name: "Encaminhar para análise" })
+    ).toBeTruthy();
+  });
+});

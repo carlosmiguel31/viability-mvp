@@ -46,6 +46,9 @@ model User {
   coverageLayersUploaded  CoverageLayer[]   @relation("CoverageLayerUploadedBy")
 
   @@map("users")
+  reviewsOpened   ViabilityReview[]      @relation("ReviewsOpened")
+  reviewsAssigned ViabilityReview[]      @relation("ReviewsAssigned")
+  reviewEvents    ViabilityReviewEvent[] @relation("ReviewEventsActed")
 }
 
 /// Sessões de renovação: guarda SOMENTE o hash SHA-256 do token, nunca o
@@ -208,6 +211,7 @@ model ViabilityConsultation {
   errorCode String?
 
   coverageMatchProjections ViabilityConsultationCoverageMatch[] @relation("ConsultationCoverageMatches")
+  review                   ViabilityReview?                     @relation("ConsultationReview")
 
   @@index([createdAt])
   @@index([userId])
@@ -242,4 +246,91 @@ model ViabilityConsultationCoverageMatch {
   @@index([layerIdSnapshot])
   @@index([createdAt])
   @@map("viability_consultation_coverage_matches")
+}
+
+/// ── Fila de análises técnicas (v0.6.0) ─────────────────────────
+/// A análise NUNCA altera a consulta histórica: decisão operacional
+/// (APPROVED/REJECTED) é registrada em entidade separada, ao lado do
+/// resultado automático imutável.
+
+enum ReviewStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_INFORMATION
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum ReviewPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ReviewEventType {
+  CREATED
+  ASSIGNED
+  UNASSIGNED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  DUE_DATE_CHANGED
+  NOTE_ADDED
+  RESOLVED
+  REOPENED
+}
+
+model ViabilityReview {
+  id                String                @id @default(uuid()) @db.Uuid
+  /// No máximo UMA análise (ativa ou histórica) por consulta.
+  consultationId    String                @unique @db.Uuid
+  consultation      ViabilityConsultation @relation("ConsultationReview", fields: [consultationId], references: [id])
+  status            ReviewStatus          @default(OPEN)
+  priority          ReviewPriority        @default(NORMAL)
+  openedById        String                @db.Uuid
+  openedBy          User                  @relation("ReviewsOpened", fields: [openedById], references: [id])
+  assignedToId      String?               @db.Uuid
+  assignedTo        User?                 @relation("ReviewsAssigned", fields: [assignedToId], references: [id])
+  resolutionCode    String?
+  resolutionSummary String?
+  dueAt             DateTime?
+  startedAt         DateTime?
+  resolvedAt        DateTime?
+  /// Concorrência otimista: toda mutação exige a versão atual.
+  version           Int                   @default(1)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  events ViabilityReviewEvent[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([assignedToId])
+  @@index([openedById])
+  @@index([dueAt])
+  @@index([createdAt])
+  @@index([updatedAt])
+  @@map("viability_reviews")
+}
+
+/// Linha do tempo IMUTÁVEL da análise: sem endpoints de edição/exclusão.
+model ViabilityReviewEvent {
+  id         String          @id @default(uuid()) @db.Uuid
+  reviewId   String          @db.Uuid
+  review     ViabilityReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  actorId    String?         @db.Uuid
+  actor      User?           @relation("ReviewEventsActed", fields: [actorId], references: [id])
+  type       ReviewEventType
+  fromStatus ReviewStatus?
+  toStatus   ReviewStatus?
+  note       String?
+  metadata   Json?
+  createdAt  DateTime        @default(now())
+
+  @@index([reviewId])
+  @@index([actorId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("viability_review_events")
 }

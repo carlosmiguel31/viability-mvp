@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import MapView from "./MapView";
 import ResultPanel from "./ResultPanel";
+import { SessionUser } from "../auth";
 import AddressForm from "./AddressForm";
 import { ApiError, checkViabilityByAddress, fetchCoverageAreas } from "../api";
 import {
@@ -21,7 +22,7 @@ const EMPTY_ADDRESS: AddressFormValues = {
 };
 
 /** Fluxo de consulta de viabilidade (inalterado na v0.2.0, agora autenticado). */
-export default function ConsultaPage() {
+export default function ConsultaPage({ currentUser }: { currentUser?: SessionUser }) {
   const [address, setAddress] = useState<AddressFormValues>(EMPTY_ADDRESS);
   const [result, setResult] = useState<AddressViabilityResponse | null>(null);
   // Token opaco da confirmacao de localizacao: SOMENTE em memoria (nunca em
@@ -142,7 +143,7 @@ export default function ConsultaPage() {
           </div>
         )}
 
-        {result && <ResultPanel result={result} />}
+        {result && <ResultPanel result={result} currentUser={currentUser} />}
       </div>
 
       <div className="overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm">

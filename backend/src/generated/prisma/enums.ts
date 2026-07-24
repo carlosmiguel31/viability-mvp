@@ -35,3 +35,40 @@ export const CoverageProcessingStatus = {
 } as const
 
 export type CoverageProcessingStatus = (typeof CoverageProcessingStatus)[keyof typeof CoverageProcessingStatus]
+
+
+export const ReviewStatus = {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  WAITING_INFORMATION: 'WAITING_INFORMATION',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ReviewStatus = (typeof ReviewStatus)[keyof typeof ReviewStatus]
+
+
+export const ReviewPriority = {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type ReviewPriority = (typeof ReviewPriority)[keyof typeof ReviewPriority]
+
+
+export const ReviewEventType = {
+  CREATED: 'CREATED',
+  ASSIGNED: 'ASSIGNED',
+  UNASSIGNED: 'UNASSIGNED',
+  STATUS_CHANGED: 'STATUS_CHANGED',
+  PRIORITY_CHANGED: 'PRIORITY_CHANGED',
+  DUE_DATE_CHANGED: 'DUE_DATE_CHANGED',
+  NOTE_ADDED: 'NOTE_ADDED',
+  RESOLVED: 'RESOLVED',
+  REOPENED: 'REOPENED'
+} as const
+
+export type ReviewEventType = (typeof ReviewEventType)[keyof typeof ReviewEventType]

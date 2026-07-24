@@ -299,11 +299,13 @@ describe("backfill da migration em banco com histórico", () => {
       const folders = readdirSync(MIGRATIONS_DIR)
         .filter((name) => /^\d{14}/.test(name))
         .sort();
-      const backfillFolder = folders[folders.length - 1];
-      expect(backfillFolder).toContain("consultation_coverage_matches");
+      const backfillFolder = folders.find((name) =>
+        name.includes("consultation_coverage_matches")
+      )!;
+      expect(backfillFolder).toBeTruthy();
 
       // Aplica todas as migrations ANTERIORES à do backfill:
-      for (const folder of folders.slice(0, -1)) {
+      for (const folder of folders.filter((name) => name < backfillFolder)) {
         const sql = readFileSync(path.join(MIGRATIONS_DIR, folder, "migration.sql"), "utf-8");
         await fresh.query(sql);
       }

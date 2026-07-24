@@ -85,3 +85,17 @@ export function calendarDaysBetween(a: string, b: string): number {
   const end = Date.parse(`${b}T00:00:00Z`);
   return Math.round((end - start) / (24 * 60 * 60 * 1000));
 }
+
+/**
+ * Valida uma data de calendário REAL no formato AAAA-MM-DD: além do formato,
+ * confirma que ano/mês/dia existem de fato (2026-02-31, 2026-04-31 e
+ * 2026-13-01 são rejeitados). Nenhuma normalização silenciosa de Date.parse.
+ */
+export function isValidCalendarDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map((part) => Number(part));
+  if (month < 1 || month > 12 || day < 1) return false;
+  const leap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  const daysInMonth = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return day <= daysInMonth[month - 1];
+}

@@ -7,16 +7,18 @@ import ChangePasswordForm from "./components/ChangePasswordForm";
 import AuditPage from "./components/AuditPage";
 import CoverageAdminPage from "./components/CoverageAdminPage";
 import ConsultationHistoryPage from "./components/ConsultationHistoryPage";
+import ReviewsPage from "./components/ReviewsPage";
 import { logout, onSessionChange, restoreSession, SessionUser } from "./auth";
 import { fetchCoverageStatus } from "./api";
 import { CoverageStatus, ROLE_LABELS } from "./types";
 
-type View = "dashboard" | "consulta" | "historico" | "coberturas" | "usuarios" | "auditoria" | "senha";
+type View = "dashboard" | "consulta" | "historico" | "reviews" | "coberturas" | "usuarios" | "auditoria" | "senha";
 
 const MENU: Array<{ view: View; label: string; adminOnly: boolean }> = [
   { view: "dashboard", label: "Dashboard", adminOnly: false },
   { view: "consulta", label: "Nova consulta", adminOnly: false },
   { view: "historico", label: "Histórico", adminOnly: false },
+  { view: "reviews", label: "Análises", adminOnly: false },
   { view: "coberturas", label: "Coberturas", adminOnly: true },
   { view: "usuarios", label: "Usuários", adminOnly: true },
   { view: "auditoria", label: "Auditoria", adminOnly: true },
@@ -37,6 +39,7 @@ export default function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [restoring, setRestoring] = useState(true);
   const [view, setView] = useState<View>("dashboard");
+  const [selectedHistoryProtocol, setSelectedHistoryProtocol] = useState<string | null>(null);
   const [coverage, setCoverage] = useState<CoverageStatus | null>(null);
 
   // Sessão reativa: login/logout/expiração em qualquer ponto refletem aqui.
@@ -115,7 +118,13 @@ export default function App() {
               <li key={item.view}>
                 <button
                   type="button"
-                  onClick={() => setView(item.view)}
+                  onClick={() => {
+                    if (item.view === "historico") {
+                      // Abertura manual: nunca reaplicar um protocolo anterior.
+                      setSelectedHistoryProtocol(null);
+                    }
+                    setView(item.view);
+                  }}
                   aria-current={view === item.view ? "page" : undefined}
                   className={
                     view === item.view
@@ -132,8 +141,22 @@ export default function App() {
 
         <main className="min-w-0 flex-1">
           {view === "dashboard" && <DashboardPage currentUser={user} />}
-          {view === "consulta" && <ConsultaPage />}
-          {view === "historico" && <ConsultationHistoryPage currentUser={user} />}
+          {view === "consulta" && <ConsultaPage currentUser={user} />}
+          {view === "historico" && (
+            <ConsultationHistoryPage
+              currentUser={user}
+              initialProtocol={selectedHistoryProtocol}
+            />
+          )}
+          {view === "reviews" && (
+            <ReviewsPage
+              currentUser={user}
+              openConsultationHistory={(protocol) => {
+                setSelectedHistoryProtocol(protocol);
+                setView("historico");
+              }}
+            />
+          )}
           {view === "senha" && <ChangePasswordForm />}
           {view === "coberturas" && user.role === "ADMIN" && (
             <CoverageAdminPage onCoverageChanged={refreshCoverageStatus} />

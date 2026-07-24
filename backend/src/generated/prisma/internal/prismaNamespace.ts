@@ -403,7 +403,9 @@ export const ModelName = {
   CoveragePartner: 'CoveragePartner',
   CoverageLayer: 'CoverageLayer',
   ViabilityConsultation: 'ViabilityConsultation',
-  ViabilityConsultationCoverageMatch: 'ViabilityConsultationCoverageMatch'
+  ViabilityConsultationCoverageMatch: 'ViabilityConsultationCoverageMatch',
+  ViabilityReview: 'ViabilityReview',
+  ViabilityReviewEvent: 'ViabilityReviewEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -419,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "auditLog" | "coveragePartner" | "coverageLayer" | "viabilityConsultation" | "viabilityConsultationCoverageMatch"
+    modelProps: "user" | "refreshToken" | "auditLog" | "coveragePartner" | "coverageLayer" | "viabilityConsultation" | "viabilityConsultationCoverageMatch" | "viabilityReview" | "viabilityReviewEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -941,6 +943,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ViabilityReview: {
+      payload: Prisma.$ViabilityReviewPayload<ExtArgs>
+      fields: Prisma.ViabilityReviewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ViabilityReviewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ViabilityReviewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>
+        }
+        findFirst: {
+          args: Prisma.ViabilityReviewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ViabilityReviewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>
+        }
+        findMany: {
+          args: Prisma.ViabilityReviewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>[]
+        }
+        create: {
+          args: Prisma.ViabilityReviewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>
+        }
+        createMany: {
+          args: Prisma.ViabilityReviewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ViabilityReviewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>[]
+        }
+        delete: {
+          args: Prisma.ViabilityReviewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>
+        }
+        update: {
+          args: Prisma.ViabilityReviewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>
+        }
+        deleteMany: {
+          args: Prisma.ViabilityReviewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ViabilityReviewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ViabilityReviewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>[]
+        }
+        upsert: {
+          args: Prisma.ViabilityReviewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewPayload>
+        }
+        aggregate: {
+          args: Prisma.ViabilityReviewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateViabilityReview>
+        }
+        groupBy: {
+          args: Prisma.ViabilityReviewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityReviewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ViabilityReviewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityReviewCountAggregateOutputType> | number
+        }
+      }
+    }
+    ViabilityReviewEvent: {
+      payload: Prisma.$ViabilityReviewEventPayload<ExtArgs>
+      fields: Prisma.ViabilityReviewEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ViabilityReviewEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ViabilityReviewEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>
+        }
+        findFirst: {
+          args: Prisma.ViabilityReviewEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ViabilityReviewEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>
+        }
+        findMany: {
+          args: Prisma.ViabilityReviewEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>[]
+        }
+        create: {
+          args: Prisma.ViabilityReviewEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>
+        }
+        createMany: {
+          args: Prisma.ViabilityReviewEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ViabilityReviewEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>[]
+        }
+        delete: {
+          args: Prisma.ViabilityReviewEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>
+        }
+        update: {
+          args: Prisma.ViabilityReviewEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.ViabilityReviewEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ViabilityReviewEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ViabilityReviewEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.ViabilityReviewEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityReviewEventPayload>
+        }
+        aggregate: {
+          args: Prisma.ViabilityReviewEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateViabilityReviewEvent>
+        }
+        groupBy: {
+          args: Prisma.ViabilityReviewEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityReviewEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ViabilityReviewEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityReviewEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1123,6 +1273,41 @@ export const ViabilityConsultationCoverageMatchScalarFieldEnum = {
 export type ViabilityConsultationCoverageMatchScalarFieldEnum = (typeof ViabilityConsultationCoverageMatchScalarFieldEnum)[keyof typeof ViabilityConsultationCoverageMatchScalarFieldEnum]
 
 
+export const ViabilityReviewScalarFieldEnum = {
+  id: 'id',
+  consultationId: 'consultationId',
+  status: 'status',
+  priority: 'priority',
+  openedById: 'openedById',
+  assignedToId: 'assignedToId',
+  resolutionCode: 'resolutionCode',
+  resolutionSummary: 'resolutionSummary',
+  dueAt: 'dueAt',
+  startedAt: 'startedAt',
+  resolvedAt: 'resolvedAt',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ViabilityReviewScalarFieldEnum = (typeof ViabilityReviewScalarFieldEnum)[keyof typeof ViabilityReviewScalarFieldEnum]
+
+
+export const ViabilityReviewEventScalarFieldEnum = {
+  id: 'id',
+  reviewId: 'reviewId',
+  actorId: 'actorId',
+  type: 'type',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  note: 'note',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type ViabilityReviewEventScalarFieldEnum = (typeof ViabilityReviewEventScalarFieldEnum)[keyof typeof ViabilityReviewEventScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1295,6 +1480,48 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
+
+/**
+ * Reference to a field of type 'ReviewStatus'
+ */
+export type EnumReviewStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ReviewStatus[]'
+ */
+export type ListEnumReviewStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReviewPriority'
+ */
+export type EnumReviewPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewPriority'>
+    
+
+
+/**
+ * Reference to a field of type 'ReviewPriority[]'
+ */
+export type ListEnumReviewPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewPriority[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReviewEventType'
+ */
+export type EnumReviewEventTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewEventType'>
+    
+
+
+/**
+ * Reference to a field of type 'ReviewEventType[]'
+ */
+export type ListEnumReviewEventTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewEventType[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1453,6 +1680,8 @@ export type GlobalOmitConfig = {
   coverageLayer?: Prisma.CoverageLayerOmit
   viabilityConsultation?: Prisma.ViabilityConsultationOmit
   viabilityConsultationCoverageMatch?: Prisma.ViabilityConsultationCoverageMatchOmit
+  viabilityReview?: Prisma.ViabilityReviewOmit
+  viabilityReviewEvent?: Prisma.ViabilityReviewEventOmit
 }
 
 /* Types for Logging */

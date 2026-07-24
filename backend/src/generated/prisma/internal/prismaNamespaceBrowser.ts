@@ -57,7 +57,9 @@ export const ModelName = {
   CoveragePartner: 'CoveragePartner',
   CoverageLayer: 'CoverageLayer',
   ViabilityConsultation: 'ViabilityConsultation',
-  ViabilityConsultationCoverageMatch: 'ViabilityConsultationCoverageMatch'
+  ViabilityConsultationCoverageMatch: 'ViabilityConsultationCoverageMatch',
+  ViabilityReview: 'ViabilityReview',
+  ViabilityReviewEvent: 'ViabilityReviewEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -217,6 +219,41 @@ export const ViabilityConsultationCoverageMatchScalarFieldEnum = {
 } as const
 
 export type ViabilityConsultationCoverageMatchScalarFieldEnum = (typeof ViabilityConsultationCoverageMatchScalarFieldEnum)[keyof typeof ViabilityConsultationCoverageMatchScalarFieldEnum]
+
+
+export const ViabilityReviewScalarFieldEnum = {
+  id: 'id',
+  consultationId: 'consultationId',
+  status: 'status',
+  priority: 'priority',
+  openedById: 'openedById',
+  assignedToId: 'assignedToId',
+  resolutionCode: 'resolutionCode',
+  resolutionSummary: 'resolutionSummary',
+  dueAt: 'dueAt',
+  startedAt: 'startedAt',
+  resolvedAt: 'resolvedAt',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ViabilityReviewScalarFieldEnum = (typeof ViabilityReviewScalarFieldEnum)[keyof typeof ViabilityReviewScalarFieldEnum]
+
+
+export const ViabilityReviewEventScalarFieldEnum = {
+  id: 'id',
+  reviewId: 'reviewId',
+  actorId: 'actorId',
+  type: 'type',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  note: 'note',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type ViabilityReviewEventScalarFieldEnum = (typeof ViabilityReviewEventScalarFieldEnum)[keyof typeof ViabilityReviewEventScalarFieldEnum]
 
 
 export const SortOrder = {

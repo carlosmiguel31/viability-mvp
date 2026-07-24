@@ -466,3 +466,188 @@ export interface DashboardUserOption {
   name: string;
   email: string;
 }
+
+// ── Fila de análises técnicas (v0.6.0) ───────────────────────
+export type ReviewStatus =
+  | "OPEN"
+  | "IN_PROGRESS"
+  | "WAITING_INFORMATION"
+  | "APPROVED"
+  | "REJECTED"
+  | "CANCELLED";
+
+export type ReviewPriority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
+
+export type ReviewEventType =
+  | "CREATED"
+  | "ASSIGNED"
+  | "UNASSIGNED"
+  | "STATUS_CHANGED"
+  | "PRIORITY_CHANGED"
+  | "DUE_DATE_CHANGED"
+  | "NOTE_ADDED"
+  | "RESOLVED"
+  | "REOPENED";
+
+export interface ReviewSla {
+  overdue: boolean;
+  remainingMinutes: number | null;
+  resolvedWithinSla: boolean | null;
+}
+
+export interface ViabilityReviewSummary {
+  id: string;
+  status: ReviewStatus;
+  priority: ReviewPriority;
+  version: number;
+  assignedToId?: string | null;
+}
+
+export interface ViabilityReviewListItem {
+  id: string;
+  status: ReviewStatus;
+  priority: ReviewPriority;
+  dueAt: string | null;
+  startedAt: string | null;
+  resolvedAt: string | null;
+  resolutionCode: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  openedBy: { id: string; name: string };
+  assignedTo: { id: string; name: string } | null;
+  consultation: {
+    id: string;
+    protocol: string;
+    status: string;
+    street: string;
+    number: string;
+    neighborhood: string | null;
+    city: string;
+    state: string;
+  };
+  sla: ReviewSla;
+}
+
+export interface ViabilityReviewEvent {
+  id: string;
+  type: ReviewEventType;
+  fromStatus: ReviewStatus | null;
+  toStatus: ReviewStatus | null;
+  note: string | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  actor: { id: string; name: string } | null;
+}
+
+export interface ViabilityReviewDetails {
+  id: string;
+  consultationId: string;
+  status: ReviewStatus;
+  priority: ReviewPriority;
+  openedBy: { id: string; name: string; email: string };
+  assignedTo: { id: string; name: string; email: string } | null;
+  resolutionCode: string | null;
+  resolutionSummary: string | null;
+  dueAt: string | null;
+  startedAt: string | null;
+  resolvedAt: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  sla: ReviewSla;
+  consultation: {
+    id: string;
+    protocol: string;
+    status: string;
+    resultMessage: string;
+    street: string;
+    number: string;
+    neighborhood: string | null;
+    city: string;
+    state: string;
+    coverageMatchCount: number;
+    networkReferenceStatus: string;
+    createdAt: string;
+    coverage: {
+      matches: Array<{
+        partnerName: string | null;
+        partnerCode: string | null;
+        layerName: string | null;
+        version: string | null;
+      }>;
+      matchCount: number;
+    };
+    network: {
+      status: string;
+      reference: StoredNetworkReference | null;
+      alternatives: StoredNetworkReference[];
+    };
+  };
+  events: ViabilityReviewEvent[];
+}
+
+export interface ReviewsPageResponse {
+  reviews: ViabilityReviewListItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface ReviewsSummary {
+  total: number;
+  open: number;
+  inProgress: number;
+  waitingInformation: number;
+  approved: number;
+  rejected: number;
+  cancelled: number;
+  overdue: number;
+  unassigned: number;
+  assignedToMe: number;
+  byPriority: { low: number; normal: number; high: number; urgent: number };
+}
+
+export interface StoredNetworkReference {
+  distanceMeters: number | null;
+  identificationStatus: string | null;
+  identifiers: Array<{ id: string | null; code: string | null }>;
+}
+
+export interface ReviewByConsultation {
+  id: string;
+  consultationId: string;
+  status: ReviewStatus;
+  priority: ReviewPriority;
+  assignedTo: { id: string; name: string } | null;
+  dueAt: string | null;
+  version: number;
+}
+
+export interface ReviewAssigneeOption {
+  id: string;
+  name: string;
+  email: string;
+  role: "ADMIN" | "TECHNICIAN";
+}
+
+export interface ReviewListParams {
+  search?: string;
+  protocol?: string;
+  status?: ReviewStatus;
+  priority?: ReviewPriority;
+  assignedToId?: string;
+  openedById?: string;
+  city?: string;
+  state?: string;
+  overdue?: boolean;
+  unassigned?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  dueFrom?: string;
+  dueTo?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: "createdAt" | "updatedAt" | "dueAt" | "priority" | "status";
+  sortOrder?: "asc" | "desc";
+}

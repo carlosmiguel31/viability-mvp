@@ -14,6 +14,9 @@ import ConsultationDetailsDialog, {
   NETWORK_LABELS,
   STATUS_LABELS,
 } from "./ConsultationDetailsDialog";
+import { ReviewCreateDialog } from "./ReviewsPage";
+import ReviewDetailsDialog from "./ReviewDetailsDialog";
+import { ApiError as ReviewApiError, getReviewByConsultation } from "../api";
 import {
   ConsultationDetail,
   ConsultationListParams,
@@ -54,7 +57,14 @@ function shortAddress(item: ConsultationSummary): string {
 }
 
 /** Histórico persistente e imutável das consultas de viabilidade. */
-export default function ConsultationHistoryPage({ currentUser }: { currentUser: SessionUser }) {
+export default function ConsultationHistoryPage({
+  currentUser,
+  initialProtocol,
+}: {
+  currentUser: SessionUser;
+  /** Protocolo vindo da fila de análises: preenche e aplica a busca. */
+  initialProtocol?: string | null;
+}) {
   const isAdmin = currentUser.role === "ADMIN";
   const canFilterByUser = currentUser.role !== "VIEWER";
 
@@ -63,11 +73,58 @@ export default function ConsultationHistoryPage({ currentUser }: { currentUser: 
   const [page, setPage] = useState(1);
   const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
+
+  useEffect(() => {
+    // Estado apenas em memória (nunca localStorage/sessionStorage): ao mudar
+    // de análise, o protocolo anterior é substituído; a busca é aplicada.
+    if (!initialProtocol) return;
+    setDraft((current) => ({ ...current, search: initialProtocol }));
+    setApplied((current) => ({ ...current, search: initialProtocol }));
+    setPage(1);
+  }, [initialProtocol]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [userOptions, setUserOptions] = useState<PublicUser[]>([]);
   const [detail, setDetail] = useState<ConsultationDetail | null>(null);
+  const [reviewTarget, setReviewTarget] = useState<{
+    id: string;
+    protocol: string;
+    addressText: string;
+  } | null>(null);
+  // consultationId → reviewId (null = sem análise): decide o rótulo do botão.
+  const [reviewMap, setReviewMap] = useState<Record<string, string | null>>({});
+  const [openReviewId, setOpenReviewId] = useState<string | null>(null);
+  const canForwardToReview = currentUser.role === "ADMIN" || currentUser.role === "OPERATOR";
+
+  async function resolveReviewFor(consultationId: string): Promise<string | null> {
+    try {
+      const data = await getReviewByConsultation(consultationId);
+      return data.review.id;
+    } catch (err) {
+      if (err instanceof ReviewApiError && err.status === 404) return null;
+      return null;
+    }
+  }
+
+  async function handleReviewAction(item: {
+    id: string;
+    protocol: string;
+    addressText: string;
+  }) {
+    const known = reviewMap[item.id];
+    if (known) {
+      setOpenReviewId(known); // abre direto os detalhes, sem formulário
+      return;
+    }
+    const existing = await resolveReviewFor(item.id);
+    setReviewMap((current) => ({ ...current, [item.id]: existing }));
+    if (existing) {
+      setOpenReviewId(existing);
+    } else {
+      setReviewTarget(item);
+    }
+  }
   const [detailLoading, setDetailLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
 
@@ -427,6 +484,21 @@ export default function ConsultationHistoryPage({ currentUser }: { currentUser: 
                       >
                         Ver detalhes
                       </button>
+                      {canForwardToReview && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            void handleReviewAction({
+                              id: item.id,
+                              protocol: item.protocol,
+                              addressText: `${item.address.street}, ${item.address.number} — ${item.address.city}/${item.address.state}`,
+                            })
+                          }
+                          className={`${linkButton} ml-2`}
+                        >
+                          {reviewMap[item.id] ? "Abrir análise" : "Encaminhar para análise"}
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -468,6 +540,34 @@ export default function ConsultationHistoryPage({ currentUser }: { currentUser: 
       </section>
 
       {detail && <ConsultationDetailsDialog detail={detail} onClose={() => setDetail(null)} />}
+
+      {reviewTarget && (
+        <ReviewCreateDialog
+          consultationId={reviewTarget.id}
+          protocol={reviewTarget.protocol}
+          addressText={reviewTarget.addressText}
+          currentUser={currentUser}
+          onClose={() => setReviewTarget(null)}
+          onCreated={(reviewId) => {
+            // Preserva o reviewId real: o botão da linha vira "Abrir análise".
+            const consultationId = reviewTarget.id;
+            setReviewMap((current) => ({ ...current, [consultationId]: reviewId }));
+          }}
+          onOpenReview={(reviewId) => {
+            const consultationId = reviewTarget.id;
+            setReviewMap((current) => ({ ...current, [consultationId]: reviewId }));
+            setReviewTarget(null); // fecha o formulário…
+            setOpenReviewId(reviewId); // …e abre os detalhes imediatamente
+          }}
+        />
+      )}
+      {openReviewId && (
+        <ReviewDetailsDialog
+          reviewId={openReviewId}
+          currentUser={currentUser}
+          onClose={() => setOpenReviewId(null)}
+        />
+      )}
     </div>
   );
 }

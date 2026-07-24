@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddressViabilityResponse, PublicNetworkLocation } from "../types";
+import { SessionUser } from "../auth";
+import { ApiError, getReviewByConsultation } from "../api";
+import { ReviewCreateDialog } from "./ReviewsPage";
+import ReviewDetailsDialog from "./ReviewDetailsDialog";
 
 interface Props {
   result: AddressViabilityResponse;
+  /** Usuário da sessão: habilita "Encaminhar para análise" (ADMIN/OPERATOR). */
+  currentUser?: SessionUser;
 }
 
 /**
@@ -110,7 +116,34 @@ export async function copyTextToClipboard(text: string): Promise<boolean> {
   }
 }
 
-export default function ResultPanel({ result }: Props) {
+export default function ResultPanel({ result, currentUser }: Props) {
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  // reviewId REAL da análise (existente ou recém-criada); null = sem análise.
+  const [reviewId, setReviewId] = useState<string | null>(null);
+  const [openReviewId, setOpenReviewId] = useState<string | null>(null);
+  const canForward =
+    currentUser && (currentUser.role === "ADMIN" || currentUser.role === "OPERATOR");
+  const consultationId = result.consultation?.id ?? null;
+
+  useEffect(() => {
+    // Detecta análise existente para decidir entre "Encaminhar" e "Abrir".
+    setReviewId(null);
+    if (!consultationId || !currentUser) return;
+    let cancelled = false;
+    getReviewByConsultation(consultationId)
+      .then((data) => {
+        if (!cancelled) setReviewId(data.review.id);
+      })
+      .catch((err) => {
+        // 404 = sem análise; outros erros mantêm o fluxo de criação.
+        if (!cancelled && !(err instanceof ApiError && err.status === 404)) {
+          setReviewId(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [consultationId, currentUser]);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const [protocolCopied, setProtocolCopied] = useState(false);
   const meta = STATUS_META[result.status] ?? STATUS_META.COVERAGE_NOT_LOADED;
@@ -152,7 +185,43 @@ export default function ResultPanel({ result }: Props) {
           >
             {protocolCopied ? "Copiado!" : "Copiar protocolo"}
           </button>
+          {canForward && (
+            <button
+              type="button"
+              onClick={() => {
+                if (reviewId) {
+                  setOpenReviewId(reviewId); // abre direto os detalhes
+                } else {
+                  setReviewDialogOpen(true);
+                }
+              }}
+              className="rounded border border-petrol-800/40 px-2 py-1 text-[11px] font-medium text-petrol-800 transition hover:bg-petrol-800/5"
+            >
+              {reviewId ? "Abrir análise" : "Encaminhar para análise"}
+            </button>
+          )}
         </div>
+      )}
+      {reviewDialogOpen && result.consultation && currentUser && (
+        <ReviewCreateDialog
+          consultationId={result.consultation.id}
+          protocol={result.consultation.protocol}
+          addressText={searchedAddress.formattedAddress}
+          currentUser={currentUser}
+          onClose={() => setReviewDialogOpen(false)}
+          onCreated={(createdReviewId) => setReviewId(createdReviewId)}
+          onOpenReview={(id) => {
+            setReviewDialogOpen(false);
+            setOpenReviewId(id);
+          }}
+        />
+      )}
+      {openReviewId && currentUser && (
+        <ReviewDetailsDialog
+          reviewId={openReviewId}
+          currentUser={currentUser}
+          onClose={() => setOpenReviewId(null)}
+        />
       )}
 
       <p className="mt-2 text-xs text-ink/60">

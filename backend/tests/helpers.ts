@@ -74,6 +74,8 @@ export function assertTestDatabase(
 
 export async function resetAppDatabase(): Promise<void> {
   assertTestDatabase();
+  await prisma.viabilityReviewEvent.deleteMany();
+  await prisma.viabilityReview.deleteMany();
   await prisma.auditLog.deleteMany();
   await prisma.viabilityConsultation.deleteMany();
   await prisma.refreshToken.deleteMany();

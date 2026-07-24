@@ -129,6 +129,19 @@ function mockHappyPath() {
   mocked.getDashboardTimeline.mockResolvedValue(structuredClone(TIMELINE));
   mocked.getDashboardBreakdowns.mockResolvedValue(structuredClone(BREAKDOWNS));
   mocked.getDashboardRankings.mockResolvedValue(structuredClone(RANKINGS));
+  mocked.getReviewsSummary.mockResolvedValue({
+    total: 0,
+    open: 0,
+    inProgress: 0,
+    waitingInformation: 0,
+    approved: 0,
+    rejected: 0,
+    cancelled: 0,
+    overdue: 0,
+    unassigned: 0,
+    assignedToMe: 0,
+    byPriority: { low: 0, normal: 0, high: 0, urgent: 0 },
+  });
   mocked.getDashboardRecentConsultations.mockResolvedValue({
     consultations: structuredClone(RECENT),
   });

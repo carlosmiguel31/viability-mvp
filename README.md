@@ -815,6 +815,209 @@ graceful shutdown (SIGINT/SIGTERM fecham o servidor HTTP e o pool).
 A resposta nunca inclui portas (totais/ocupadas/livres), capacidade,
 disponibilidade estimada, clientes conectados, CPF, CNPJ ou telefone.
 
+## Fila de análises técnicas (v0.6.0)
+
+Módulo operacional que permite encaminhar consultas de viabilidade para
+análise técnica humana. A análise vive em entidades separadas
+(`viability_reviews` e `viability_review_events`) e **nunca altera a consulta
+histórica**: protocolo, endereço, status original, coverageMatches, referência
+Voalle e coordenadas permanecem imutáveis.
+
+### Resultado automático × decisão operacional
+
+O **resultado automático** é o status da consulta gerado pelo motor geográfico
+(ex.: `PRELIMINARILY_VIABLE`). A **decisão da análise** (`APPROVED` ou
+`REJECTED`) é registrada separadamente na análise, com código e resumo de
+resolução, e não substitui o status original. A interface mostra os dois lado
+a lado ("Resultado automático: Viável preliminarmente · Decisão da análise:
+Aprovada").
+
+### Status, prioridades e transições
+
+Status: `OPEN`, `IN_PROGRESS`, `WAITING_INFORMATION`, `APPROVED`, `REJECTED`,
+`CANCELLED`. Prioridades: `LOW`, `NORMAL` (padrão), `HIGH`, `URGENT`.
+Transições explícitas — qualquer outra responde
+`REVIEW_INVALID_STATUS_TRANSITION`:
+
+| De | Para |
+| --- | --- |
+| OPEN | IN_PROGRESS, WAITING_INFORMATION, CANCELLED |
+| IN_PROGRESS | WAITING_INFORMATION, APPROVED*, REJECTED*, CANCELLED |
+| WAITING_INFORMATION | OPEN, IN_PROGRESS, CANCELLED |
+| APPROVED / REJECTED / CANCELLED | OPEN (somente por reabertura autorizada) |
+
+\* Aprovação e rejeição só pelo endpoint de resolução (`POST
+/api/reviews/:id/resolve`), com `resolutionCode` (maiúsculas/números/`_`, até
+60 caracteres — ex.: `COVERAGE_CONFIRMED`, `TECHNICAL_RESTRICTION`,
+`ADDRESS_NOT_FOUND`, `CAPACITY_UNAVAILABLE`, `MANUAL_APPROVAL`, `OTHER`) e
+`resolutionSummary` obrigatório (até 2000). Tentar `PATCH` direto para
+APPROVED/REJECTED responde `REVIEW_RESOLUTION_REQUIRED`. A primeira ida a
+IN_PROGRESS preenche `startedAt`; a conclusão preenche `resolvedAt`; a
+reabertura (só ADMIN) volta a OPEN, limpa `resolvedAt` e preserva toda a
+linha do tempo.
+
+### Atribuição e claim
+
+`PATCH /api/reviews/:id/assignment` (só ADMIN) atribui ou remove o
+responsável; apenas usuários **ativos** com perfil ADMIN ou TECHNICIAN são
+aceitos (`REVIEW_INVALID_ASSIGNEE`). `POST /api/reviews/:id/claim`
+(ADMIN/TECHNICIAN) assume uma análise **sem responsável** com operação
+atômica: numa disputa simultânea, exatamente um vence e o outro recebe
+`REVIEW_ALREADY_ASSIGNED` (409), sem expor detalhes de concorrência.
+
+### SLA e atraso
+
+Na criação, `dueAt = createdAt + REVIEW_DEFAULT_SLA_HOURS`. Somente ADMIN
+altera o prazo (evento `DUE_DATE_CHANGED`). O atraso **nunca é persistido**:
+`sla.overdue` e `sla.remainingMinutes` são calculados na resposta (atrasada =
+`dueAt` no passado com status ativo); análises concluídas informam
+`sla.resolvedWithinSla` (dentro/fora do prazo, historicamente calculável).
+Datas em UTC no banco; exibição em pt-BR na interface.
+
+### Observações e linha do tempo
+
+`POST /api/reviews/:id/notes` registra observações (1–3000 caracteres úteis,
+texto puro — o frontend nunca renderiza HTML). Cada mudança gera um evento
+imutável (`CREATED`, `ASSIGNED`, `UNASSIGNED`, `STATUS_CHANGED`,
+`PRIORITY_CHANGED`, `DUE_DATE_CHANGED`, `NOTE_ADDED`, `RESOLVED`, `REOPENED`)
+criado **na mesma transação** da mutação; não há endpoints de edição ou
+exclusão de eventos, nem DELETE de análise.
+
+### Concorrência otimista
+
+Toda mutação envia a `version` atual; o update só aplica quando `id` e
+`version` conferem, incrementando a versão. Versão desatualizada responde
+`REVIEW_CONFLICT` (409) e o frontend recarrega os dados avisando que outra
+pessoa atualizou a análise — nunca sobrescreve silenciosamente.
+
+### Permissões
+
+| Ação | ADMIN | TECHNICIAN | OPERATOR | VIEWER |
+| --- | --- | --- | --- | --- |
+| Ver análises | todas | todas | todas | só das próprias consultas |
+| Criar análise | ✔ | — | ✔ | — |
+| Assumir (claim) | ✔ | ✔ | — | — |
+| Atribuir/remover responsável | ✔ | — | — | — |
+| Alterar status | qualquer | só as suas | — | — |
+| Alterar prioridade | ✔ | só as suas (sem elevar a URGENT) | — | — |
+| Alterar prazo | ✔ | — | — | — |
+| Aprovar/rejeitar | ✔ | só as suas | — | — |
+| Cancelar | ✔ | só as suas | — | — |
+| Reabrir | ✔ | — | — | — |
+| Observações | ✔ | ✔ | ✔ | — |
+
+Todas as regras são aplicadas no backend; o ator é sempre o usuário
+autenticado (nunca um `userId` do corpo). Análise de consulta alheia responde
+`REVIEW_NOT_FOUND` para VIEWER (anti-enumeração).
+
+### Criação automática opcional
+
+Com `REVIEW_AUTO_CREATE_ENABLED=true`, consultas cujo status esteja em
+`REVIEW_AUTO_CREATE_STATUSES` geram análise automaticamente **após** a
+persistência (prioridade NORMAL, sem responsável, `dueAt` pelo SLA, evento
+`CREATED` com metadata `{ auto: true }`, idempotente). Uma falha na criação
+automática nunca apaga a consulta histórica: é registrada internamente
+(`REVIEW_AUTO_CREATE_FAILED`) e a criação manual continua possível. O padrão
+do `.env.example` é `false`.
+
+### Endpoints
+
+`POST /api/reviews` · `GET /api/reviews` (filtros: search, protocol, status,
+priority, assignedToId, openedById, city, state, overdue, unassigned,
+dateFrom/To, dueFrom/To; paginação padrão 20/máx 100; ordenação por
+createdAt/updatedAt/dueAt/priority/status — valores fora da lista respondem
+`REVIEW_INVALID_FILTER`) · `GET /api/reviews/summary` · `GET
+/api/reviews/assignees` (opções de responsável técnico: SOMENTE usuários
+ativos com perfil ADMIN ou TECHNICIAN; leitura por ADMIN/TECHNICIAN/OPERATOR,
+VIEWER proibido; busca e limite máx. 100) · `GET
+/api/reviews/by-consultation/:consultationId` (resumo enxuto da análise da
+consulta — sem eventos, notas ou campos internos; consulta sem análise
+responde `REVIEW_NOT_FOUND`; VIEWER só localiza análises das próprias
+consultas) · `GET /api/reviews/:id` · `PATCH /api/reviews/:id` (exige ao
+menos um campo além de `version`; enviar valores iguais aos atuais responde
+`REVIEW_INVALID_FILTER` "Nenhuma alteração foi informada." sem incrementar a
+versão nem criar evento/auditoria) · `PATCH /api/reviews/:id/assignment` ·
+`POST /api/reviews/:id/claim` (com `version` no corpo) · `POST
+/api/reviews/:id/notes` · `POST /api/reviews/:id/resolve` · `POST
+/api/reviews/:id/reopen`. Atribuição e claim exigem análise ATIVA
+(OPEN/IN_PROGRESS/WAITING_INFORMATION); análises encerradas respondem
+`REVIEW_NOT_ACTIVE` (409). O claim diferencia os três desfechos: versão
+desatualizada → `REVIEW_CONFLICT`; responsável já preenchido →
+`REVIEW_ALREADY_ASSIGNED`; status encerrado → `REVIEW_NOT_ACTIVE`.
+
+Os filtros de data (`dateFrom`, `dateTo`, `dueFrom`, `dueTo`) recebem datas
+de calendário `AAAA-MM-DD` interpretadas no fuso `CONSULTATION_TIME_ZONE`:
+From = meia-noite do dia no fuso; To = meia-noite do dia SEGUINTE (limite
+exclusivo) — sem offsets fixos, correto inclusive em horário de verão.
+
+O cancelamento preenche `resolvedAt` (permitindo o SLA histórico "encerrada
+dentro/fora do prazo"). A reabertura limpa `resolvedAt`, `resolutionCode` e
+`resolutionSummary` — a resolução antiga permanece preservada nos eventos
+RESOLVED e no metadata do REOPENED.
+
+O detalhe (`GET /api/reviews/:id`) inclui os dados públicos históricos da
+consulta: `coverage.matches` (nome do parceiro, código, camada e versão) e
+`network` (status, referência pública do Voalle com identificadores e
+distância, e alternativas públicas) — sem coordenadas desnecessárias,
+títulos privados, SPLITTER/ROTA/COLETOR, caminhos internos ou resposta bruta
+do Google (os snapshots já são sanitizados na persistência).
+
+Todos autenticados, com rate limit próprio (120/min). Códigos de erro:
+`REVIEW_NOT_FOUND`, `REVIEW_ALREADY_EXISTS`, `REVIEW_ACCESS_DENIED`,
+`REVIEW_INVALID_STATUS_TRANSITION`, `REVIEW_INVALID_FILTER`,
+`REVIEW_INVALID_ASSIGNEE`, `REVIEW_ALREADY_ASSIGNED`, `REVIEW_NOT_ACTIVE`,
+`REVIEW_CONFLICT`, `REVIEW_RESOLUTION_REQUIRED`, `REVIEW_AUTO_CREATE_FAILED`,
+`REVIEW_QUERY_FAILED` (falhas inesperadas, sem detalhes internos).
+
+### Auditoria da fila
+
+`REVIEW_CREATED`, `REVIEW_ASSIGNED`, `REVIEW_UNASSIGNED`,
+`REVIEW_STATUS_CHANGED`, `REVIEW_PRIORITY_CHANGED`,
+`REVIEW_DUE_DATE_CHANGED`, `REVIEW_NOTE_ADDED`, `REVIEW_RESOLVED`,
+`REVIEW_REOPENED`, `REVIEW_CLAIMED` — com metadados seguros (reviewId,
+consultationId, protocolo, ator, responsável, status/prioridade
+anterior/novo, resolutionCode). O **texto** das observações fica apenas em
+`viability_review_events`, nunca no AuditLog.
+
+### Interface
+
+Menu **Análises** (todos os perfis; ações internas dependem do perfil): cards
+de resumo (em aberto, em análise, aguardando informações, atrasadas, sem
+responsável, atribuídas a mim, aprovadas, rejeitadas), filtros com
+Aplicar/Limpar, tabela com badges textuais e overflow horizontal, paginação e
+detalhes com linha do tempo. Botão **"Encaminhar para análise"** no resultado
+da consulta e no histórico (ADMIN/OPERATOR): a interface consulta
+`by-consultation` para detectar análise existente — quando houver, o botão
+vira **"Abrir análise"** e abre os detalhes diretamente (também após a
+criação ou ao receber `REVIEW_ALREADY_EXISTS`, sem deixar o usuário preso na
+duplicidade). "Abrir consulta histórica" na fila navega ao Histórico com a
+busca preenchida e aplicada pelo protocolo (estado só em memória). Os campos
+de responsável técnico usam `GET /api/reviews/assignees` (nunca listam
+OPERATOR/VIEWER); o filtro "Aberta por" segue usando as opções do dashboard. O
+Dashboard ganhou cards de análises (abertas/atrasadas/sem
+responsável/atribuídas a mim) consumindo `GET /api/reviews/summary`
+separadamente — uma falha nesse resumo não derruba o dashboard. Filtros e
+observações nunca vão para `localStorage`.
+
+### Variáveis (v0.6.0)
+
+```
+REVIEW_AUTO_CREATE_ENABLED=false
+REVIEW_AUTO_CREATE_STATUSES=ADDRESS_AMBIGUOUS
+REVIEW_DEFAULT_SLA_HOURS=24   # > 0, máximo 720
+```
+
+### Como testar
+
+`cd backend && npm test` cobre criação/duplicidade, transições, claim com
+corrida real, resolução, reabertura, observações, prioridade/prazo, conflito
+de versão, transação mutação+evento, SLA calculado, RBAC completo (incluindo
+o escopo do VIEWER), filtros/paginação/ordenação, resumo, criação automática
+(desligada/ligada/idempotente/falha sem apagar a consulta), auditoria sem o
+texto das notas e `REVIEW_QUERY_FAILED`. `cd frontend && npm test` cobre a
+página com mocks da API, o diálogo de detalhes, a resolução, o conflito de
+versão e o resumo no dashboard.
+
 ## Limitações atuais
 
 - Geocodificação depende de provider externo (Google) — custos e limites da

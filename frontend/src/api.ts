@@ -22,6 +22,14 @@ import {
   DashboardSummary,
   DashboardTimeline,
   DashboardUserOption,
+  ReviewListParams,
+  ReviewPriority,
+  ReviewAssigneeOption,
+  ReviewByConsultation,
+  ReviewsPageResponse,
+  ReviewsSummary,
+  ReviewStatus,
+  ViabilityReviewDetails,
   ConsultationListParams,
   ConsultationsPage,
   GeographicCoordinate,
@@ -404,4 +412,146 @@ export function getDashboardRecentConsultations(
   filters: DashboardFilters & { limit?: number }
 ): Promise<{ consultations: DashboardRecentConsultation[] }> {
   return apiJson(`/api/dashboard/recent-consultations${dashboardQuery(filters)}`);
+}
+
+// ── Fila de análises técnicas (v0.6.0) ────────────────────────
+function reviewQuery(params: ReviewListParams): string {
+  const query = new URLSearchParams();
+  const entries: Array<[string, string | undefined]> = [
+    ["search", params.search],
+    ["protocol", params.protocol],
+    ["status", params.status],
+    ["priority", params.priority],
+    ["assignedToId", params.assignedToId],
+    ["openedById", params.openedById],
+    ["city", params.city],
+    ["state", params.state],
+    ["overdue", params.overdue ? "true" : undefined],
+    ["unassigned", params.unassigned ? "true" : undefined],
+    ["dateFrom", params.dateFrom],
+    ["dateTo", params.dateTo],
+    ["dueFrom", params.dueFrom],
+    ["dueTo", params.dueTo],
+    ["page", params.page ? String(params.page) : undefined],
+    ["limit", params.limit ? String(params.limit) : undefined],
+    ["sortBy", params.sortBy],
+    ["sortOrder", params.sortOrder],
+  ];
+  for (const [key, value] of entries) {
+    if (value) query.set(key, value);
+  }
+  const text = query.toString();
+  return text ? `?${text}` : "";
+}
+
+export function listReviews(params: ReviewListParams = {}): Promise<ReviewsPageResponse> {
+  return apiJson<ReviewsPageResponse>(`/api/reviews${reviewQuery(params)}`);
+}
+
+export function getReviewsSummary(): Promise<ReviewsSummary> {
+  return apiJson<ReviewsSummary>("/api/reviews/summary");
+}
+
+export function getReview(id: string): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson(`/api/reviews/${id}`);
+}
+
+export function createReview(input: {
+  consultationId: string;
+  priority?: ReviewPriority;
+  assignedToId?: string | null;
+  note?: string;
+}): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson("/api/reviews", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateReview(
+  id: string,
+  input: { status?: ReviewStatus; priority?: ReviewPriority; dueAt?: string | null; version: number }
+): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson(`/api/reviews/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function assignReview(
+  id: string,
+  input: { assignedToId: string | null; version: number }
+): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson(`/api/reviews/${id}/assignment`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function claimReview(
+  id: string,
+  input: { version: number }
+): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson(`/api/reviews/${id}/claim`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function getReviewByConsultation(
+  consultationId: string
+): Promise<{ review: ReviewByConsultation }> {
+  return apiJson(`/api/reviews/by-consultation/${consultationId}`);
+}
+
+export function getReviewAssignees(params: { search?: string; limit?: number } = {}): Promise<{
+  users: ReviewAssigneeOption[];
+}> {
+  const query = new URLSearchParams();
+  if (params.search) query.set("search", params.search);
+  if (params.limit) query.set("limit", String(params.limit));
+  const text = query.toString();
+  return apiJson(`/api/reviews/assignees${text ? `?${text}` : ""}`);
+}
+
+export function addReviewNote(
+  id: string,
+  input: { note: string; version: number }
+): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson(`/api/reviews/${id}/notes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function resolveReview(
+  id: string,
+  input: {
+    decision: "APPROVED" | "REJECTED";
+    resolutionCode: string;
+    resolutionSummary: string;
+    version: number;
+  }
+): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson(`/api/reviews/${id}/resolve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+export function reopenReview(
+  id: string,
+  input: { version: number; note?: string }
+): Promise<{ review: ViabilityReviewDetails }> {
+  return apiJson(`/api/reviews/${id}/reopen`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
 }

@@ -12,6 +12,7 @@ import {
   PublicNetworkLocation,
 } from "../types/viability.types";
 import type { OriginalGeocodingSnapshot } from "./location-confirmation.service";
+import { maybeAutoCreateReview } from "./review.service";
 import type { UserRole } from "../generated/prisma/client";
 
 /**
@@ -158,6 +159,23 @@ export async function persistConsultation(input: PersistInput): Promise<Consulta
         }
         return consultation;
       });
+      // Criacao automatica OPCIONAL da analise tecnica (v0.6.0): ocorre
+      // DEPOIS de a consulta estar persistida; uma falha aqui jamais apaga a
+      // consulta historica — e registrada internamente (sem stack para o
+      // cliente) e a criacao manual permanece possivel.
+      try {
+        await maybeAutoCreateReview({
+          id: created.id,
+          protocol: created.protocol,
+          status: data.status,
+          userId: input.userId,
+        });
+      } catch {
+        logger.error("Falha na criação automática da análise técnica", {
+          code: "REVIEW_AUTO_CREATE_FAILED",
+          consultationId: created.id,
+        });
+      }
       await recordAudit({
         userId: input.userId,
         action: "VIABILITY_CONSULTATION_CREATED",

@@ -458,3 +458,168 @@ describe("filtro de usuários da auditoria", () => {
     expect(select.textContent).toContain("Usuário 01");
   });
 });
+
+describe("protocolo selecionado ao abrir o Histórico", () => {
+  const LIST_ITEM = {
+    id: "r1",
+    status: "OPEN",
+    priority: "NORMAL",
+    dueAt: "2026-07-26T12:00:00.000Z",
+    startedAt: null,
+    resolvedAt: null,
+    resolutionCode: null,
+    version: 1,
+    createdAt: "2026-07-25T10:00:00.000Z",
+    updatedAt: "2026-07-25T10:00:00.000Z",
+    openedBy: { id: "u2", name: "Otto Operador" },
+    assignedTo: null,
+    consultation: {
+      id: "c1",
+      protocol: "VIA-20260725-PROTOA11",
+      status: "PRELIMINARILY_VIABLE",
+      street: "Rua A",
+      number: "1",
+      neighborhood: null,
+      city: "Belo Horizonte",
+      state: "MG",
+    },
+    sla: { overdue: false, remainingMinutes: 600, resolvedWithinSla: null },
+  };
+  const SUMMARY = {
+    total: 1,
+    open: 1,
+    inProgress: 0,
+    waitingInformation: 0,
+    approved: 0,
+    rejected: 0,
+    cancelled: 0,
+    overdue: 0,
+    unassigned: 1,
+    assignedToMe: 0,
+    byPriority: { low: 0, normal: 1, high: 0, urgent: 0 },
+  };
+  const DASH = {
+    period: { dateFrom: "2026-06-24", dateTo: "2026-07-23", timeZone: "America/Sao_Paulo" },
+    totals: {
+      consultations: 0,
+      preliminarilyViable: 0,
+      outsideCoverage: 0,
+      addressAmbiguous: 0,
+      coverageNotConfigured: 0,
+      geocodingFailed: 0,
+      otherStatuses: 0,
+    },
+    rates: {
+      coverageRate: 0,
+      networkReferenceFoundRate: 0,
+      manualConfirmationRate: 0,
+      geocodingHighConfidenceRate: 0,
+    },
+    performance: { averageDurationMs: 0, medianDurationMs: 0, p95DurationMs: 0 },
+    comparison: {
+      previousPeriod: { dateFrom: "2026-05-25", dateTo: "2026-06-23" },
+      consultationsChangePercent: null,
+      coverageRateChangePercentagePoints: null,
+      averageDurationChangePercent: null,
+    },
+  };
+
+  function protocolHandlers(secondProtocol?: string): FetchHandler[] {
+    let reviewsCall = 0;
+    return [
+      (url) =>
+        url.includes("/api/auth/refresh")
+          ? jsonResponse(200, { accessToken: "token", user: ADMIN })
+          : null,
+      (url) =>
+        url.includes("/api/reviews/summary") ? jsonResponse(200, SUMMARY) : null,
+      (url) =>
+        url.includes("/api/reviews/assignees") ? jsonResponse(200, { users: [] }) : null,
+      (url) => {
+        if (!url.includes("/api/reviews?") && !url.endsWith("/api/reviews")) return null;
+        reviewsCall += 1;
+        const protocol =
+          secondProtocol && reviewsCall > 1 ? secondProtocol : LIST_ITEM.consultation.protocol;
+        return jsonResponse(200, {
+          reviews: [
+            { ...LIST_ITEM, consultation: { ...LIST_ITEM.consultation, protocol } },
+          ],
+          total: 1,
+          page: 1,
+          limit: 20,
+        });
+      },
+      (url) =>
+        url.includes("/api/dashboard/users")
+          ? jsonResponse(200, { users: [], total: 0, page: 1, limit: 100 })
+          : null,
+      (url) =>
+        url.includes("/api/dashboard/summary") ? jsonResponse(200, DASH) : null,
+      (url) =>
+        url.includes("/api/dashboard/timeline")
+          ? jsonResponse(200, { granularity: "DAY", points: [] })
+          : null,
+      (url) =>
+        url.includes("/api/dashboard/breakdowns")
+          ? jsonResponse(200, {
+              byStatus: [],
+              byNetworkReferenceStatus: [],
+              byGeocodingConfidence: [],
+              byGeocodingLocationType: [],
+            })
+          : null,
+      (url) =>
+        url.includes("/api/dashboard/rankings")
+          ? jsonResponse(200, { partners: [], layers: [], users: [], cities: [] })
+          : null,
+      (url) =>
+        url.includes("/api/dashboard/recent-consultations")
+          ? jsonResponse(200, { consultations: [] })
+          : null,
+      (url) =>
+        url.includes("/api/consultations")
+          ? jsonResponse(200, { consultations: [], total: 0, page: 1, limit: 20 })
+          : null,
+    ];
+  }
+
+  it("fila → Histórico aplica o protocolo; menu manual NÃO reaplica; outro protocolo substitui", async () => {
+    const fetchMock = stubFetch(protocolHandlers("VIA-20260725-PROTOB22"));
+    const user = userEvent.setup();
+    render(<App />);
+    expect(await screen.findByText("Alice Admin")).toBeTruthy();
+
+    // 1) Abrir protocolo A pela fila:
+    await user.click(screen.getByRole("button", { name: "Análises" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Abrir consulta histórica" })
+    );
+    // 2) O Histórico recebe o protocolo A na busca aplicada:
+    const search = await screen.findByLabelText("Buscar");
+    expect((search as HTMLInputElement).value).toBe("VIA-20260725-PROTOA11");
+    await waitFor(() =>
+      expect(
+        fetchMock.mock.calls.some(([input]) =>
+          String(input).includes("search=VIA-20260725-PROTOA11")
+        )
+      ).toBe(true)
+    );
+
+    // 3) Navegar ao Dashboard:
+    await user.click(screen.getByRole("button", { name: "Dashboard" }));
+    await screen.findByLabelText("Indicadores principais");
+
+    // 4-5) Clicar manualmente em Histórico: o protocolo A NÃO é reaplicado.
+    await user.click(screen.getByRole("button", { name: "Histórico" }));
+    const cleanSearch = await screen.findByLabelText("Buscar");
+    expect((cleanSearch as HTMLInputElement).value).toBe("");
+
+    // 6) Abrir o protocolo B pela fila substitui A:
+    await user.click(screen.getByRole("button", { name: "Análises" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Abrir consulta histórica" })
+    );
+    const replaced = await screen.findByLabelText("Buscar");
+    expect((replaced as HTMLInputElement).value).toBe("VIA-20260725-PROTOB22");
+  });
+});

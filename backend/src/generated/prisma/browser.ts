@@ -64,3 +64,13 @@ export type ViabilityConsultation = Prisma.ViabilityConsultationModel
  * O Json coverageMatches original permanece intacto para os detalhes.
  */
 export type ViabilityConsultationCoverageMatch = Prisma.ViabilityConsultationCoverageMatchModel
+/**
+ * Model ViabilityReview
+ * 
+ */
+export type ViabilityReview = Prisma.ViabilityReviewModel
+/**
+ * Model ViabilityReviewEvent
+ * Linha do tempo IMUTÁVEL da análise: sem endpoints de edição/exclusão.
+ */
+export type ViabilityReviewEvent = Prisma.ViabilityReviewEventModel

@@ -10,6 +10,8 @@ import {
   getDashboardUserOptions,
 } from "../api";
 import { SessionUser } from "../auth";
+import { getReviewsSummary } from "../api";
+import { ReviewsSummary } from "../types";
 import ConsultationDetailsDialog, {
   NETWORK_LABELS,
   STATUS_LABELS,
@@ -260,6 +262,17 @@ export default function DashboardPage({ currentUser }: { currentUser: SessionUse
 
   const [recent, setRecent] = useState<DashboardRecentConsultation[] | null>(null);
   const [recentError, setRecentError] = useState<string | null>(null);
+
+  // Resumo da fila de análises (v0.6.0): consumido separadamente do
+  // dashboard — uma falha aqui NUNCA derruba os indicadores principais.
+  const [reviewsSummary, setReviewsSummary] = useState<ReviewsSummary | null>(null);
+  const [reviewsSummaryError, setReviewsSummaryError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getReviewsSummary()
+      .then(setReviewsSummary)
+      .catch(() => setReviewsSummaryError("Não foi possível carregar o resumo das análises."));
+  }, []);
 
   const [userOptions, setUserOptions] = useState<DashboardUserOption[]>([]);
   const [detail, setDetail] = useState<ConsultationDetail | null>(null);
@@ -595,6 +608,28 @@ export default function DashboardPage({ currentUser }: { currentUser: SessionUse
       </section>
 
       {/* ── Cards principais ── */}
+      <section aria-label="Análises técnicas" className="mb-3">
+        {reviewsSummaryError ? (
+          <p className="text-xs text-ink/50">{reviewsSummaryError}</p>
+        ) : reviewsSummary ? (
+          <div className="grid gap-2 sm:grid-cols-4">
+            {[
+              { label: "Análises abertas", value: reviewsSummary.open },
+              { label: "Análises atrasadas", value: reviewsSummary.overdue },
+              { label: "Sem responsável", value: reviewsSummary.unassigned },
+              { label: "Atribuídas a mim", value: reviewsSummary.assignedToMe },
+            ].map((card) => (
+              <div key={card.label} className="rounded-lg border border-ink/10 bg-white p-3 shadow-sm">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-ink/50">
+                  {card.label}
+                </p>
+                <p className="text-xl font-semibold">{card.value}</p>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
       <section aria-label="Indicadores principais">
         {summaryError ? (
           <div className="rounded-lg border border-signal-blocked/40 bg-white p-4 text-sm shadow-sm">

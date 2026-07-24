@@ -490,6 +490,7 @@ export type ViabilityConsultationWhereInput = {
   errorCode?: Prisma.StringNullableFilter<"ViabilityConsultation"> | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchListRelationFilter
+  review?: Prisma.XOR<Prisma.ViabilityReviewNullableScalarRelationFilter, Prisma.ViabilityReviewWhereInput> | null
 }
 
 export type ViabilityConsultationOrderByWithRelationInput = {
@@ -532,6 +533,7 @@ export type ViabilityConsultationOrderByWithRelationInput = {
   errorCode?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchOrderByRelationAggregateInput
+  review?: Prisma.ViabilityReviewOrderByWithRelationInput
 }
 
 export type ViabilityConsultationWhereUniqueInput = Prisma.AtLeast<{
@@ -577,6 +579,7 @@ export type ViabilityConsultationWhereUniqueInput = Prisma.AtLeast<{
   errorCode?: Prisma.StringNullableFilter<"ViabilityConsultation"> | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchListRelationFilter
+  review?: Prisma.XOR<Prisma.ViabilityReviewNullableScalarRelationFilter, Prisma.ViabilityReviewWhereInput> | null
 }, "id" | "protocol">
 
 export type ViabilityConsultationOrderByWithAggregationInput = {
@@ -706,6 +709,7 @@ export type ViabilityConsultationCreateInput = {
   errorCode?: string | null
   user?: Prisma.UserCreateNestedOneWithoutViabilityConsultationsInput
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchCreateNestedManyWithoutConsultationInput
+  review?: Prisma.ViabilityReviewCreateNestedOneWithoutConsultationInput
 }
 
 export type ViabilityConsultationUncheckedCreateInput = {
@@ -747,6 +751,7 @@ export type ViabilityConsultationUncheckedCreateInput = {
   source?: string | null
   errorCode?: string | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUncheckedCreateNestedManyWithoutConsultationInput
+  review?: Prisma.ViabilityReviewUncheckedCreateNestedOneWithoutConsultationInput
 }
 
 export type ViabilityConsultationUpdateInput = {
@@ -788,6 +793,7 @@ export type ViabilityConsultationUpdateInput = {
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutViabilityConsultationsNestedInput
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUpdateManyWithoutConsultationNestedInput
+  review?: Prisma.ViabilityReviewUpdateOneWithoutConsultationNestedInput
 }
 
 export type ViabilityConsultationUncheckedUpdateInput = {
@@ -829,6 +835,7 @@ export type ViabilityConsultationUncheckedUpdateInput = {
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUncheckedUpdateManyWithoutConsultationNestedInput
+  review?: Prisma.ViabilityReviewUncheckedUpdateOneWithoutConsultationNestedInput
 }
 
 export type ViabilityConsultationCreateManyInput = {
@@ -1171,6 +1178,20 @@ export type ViabilityConsultationUpdateOneRequiredWithoutCoverageMatchProjection
   update?: Prisma.XOR<Prisma.XOR<Prisma.ViabilityConsultationUpdateToOneWithWhereWithoutCoverageMatchProjectionsInput, Prisma.ViabilityConsultationUpdateWithoutCoverageMatchProjectionsInput>, Prisma.ViabilityConsultationUncheckedUpdateWithoutCoverageMatchProjectionsInput>
 }
 
+export type ViabilityConsultationCreateNestedOneWithoutReviewInput = {
+  create?: Prisma.XOR<Prisma.ViabilityConsultationCreateWithoutReviewInput, Prisma.ViabilityConsultationUncheckedCreateWithoutReviewInput>
+  connectOrCreate?: Prisma.ViabilityConsultationCreateOrConnectWithoutReviewInput
+  connect?: Prisma.ViabilityConsultationWhereUniqueInput
+}
+
+export type ViabilityConsultationUpdateOneRequiredWithoutReviewNestedInput = {
+  create?: Prisma.XOR<Prisma.ViabilityConsultationCreateWithoutReviewInput, Prisma.ViabilityConsultationUncheckedCreateWithoutReviewInput>
+  connectOrCreate?: Prisma.ViabilityConsultationCreateOrConnectWithoutReviewInput
+  upsert?: Prisma.ViabilityConsultationUpsertWithoutReviewInput
+  connect?: Prisma.ViabilityConsultationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ViabilityConsultationUpdateToOneWithWhereWithoutReviewInput, Prisma.ViabilityConsultationUpdateWithoutReviewInput>, Prisma.ViabilityConsultationUncheckedUpdateWithoutReviewInput>
+}
+
 export type ViabilityConsultationCreateWithoutUserInput = {
   id?: string
   protocol: string
@@ -1209,6 +1230,7 @@ export type ViabilityConsultationCreateWithoutUserInput = {
   source?: string | null
   errorCode?: string | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchCreateNestedManyWithoutConsultationInput
+  review?: Prisma.ViabilityReviewCreateNestedOneWithoutConsultationInput
 }
 
 export type ViabilityConsultationUncheckedCreateWithoutUserInput = {
@@ -1249,6 +1271,7 @@ export type ViabilityConsultationUncheckedCreateWithoutUserInput = {
   source?: string | null
   errorCode?: string | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUncheckedCreateNestedManyWithoutConsultationInput
+  review?: Prisma.ViabilityReviewUncheckedCreateNestedOneWithoutConsultationInput
 }
 
 export type ViabilityConsultationCreateOrConnectWithoutUserInput = {
@@ -1358,6 +1381,7 @@ export type ViabilityConsultationCreateWithoutCoverageMatchProjectionsInput = {
   source?: string | null
   errorCode?: string | null
   user?: Prisma.UserCreateNestedOneWithoutViabilityConsultationsInput
+  review?: Prisma.ViabilityReviewCreateNestedOneWithoutConsultationInput
 }
 
 export type ViabilityConsultationUncheckedCreateWithoutCoverageMatchProjectionsInput = {
@@ -1398,6 +1422,7 @@ export type ViabilityConsultationUncheckedCreateWithoutCoverageMatchProjectionsI
   requestId?: string | null
   source?: string | null
   errorCode?: string | null
+  review?: Prisma.ViabilityReviewUncheckedCreateNestedOneWithoutConsultationInput
 }
 
 export type ViabilityConsultationCreateOrConnectWithoutCoverageMatchProjectionsInput = {
@@ -1454,6 +1479,7 @@ export type ViabilityConsultationUpdateWithoutCoverageMatchProjectionsInput = {
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneWithoutViabilityConsultationsNestedInput
+  review?: Prisma.ViabilityReviewUpdateOneWithoutConsultationNestedInput
 }
 
 export type ViabilityConsultationUncheckedUpdateWithoutCoverageMatchProjectionsInput = {
@@ -1494,6 +1520,187 @@ export type ViabilityConsultationUncheckedUpdateWithoutCoverageMatchProjectionsI
   requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  review?: Prisma.ViabilityReviewUncheckedUpdateOneWithoutConsultationNestedInput
+}
+
+export type ViabilityConsultationCreateWithoutReviewInput = {
+  id?: string
+  protocol: string
+  status: string
+  resultMessage: string
+  createdAt?: Date | string
+  completedAt?: Date | string | null
+  durationMs?: number | null
+  postalCode?: string | null
+  street: string
+  number: string
+  complement?: string | null
+  neighborhood?: string | null
+  city: string
+  state: string
+  geocodingProvider: string
+  geocodedAddress?: string | null
+  geocodingConfidence?: string | null
+  geocodingLocationType?: string | null
+  geocodingPartialMatch?: boolean
+  geocodedLatitude?: number | null
+  geocodedLongitude?: number | null
+  confirmedLatitude?: number | null
+  confirmedLongitude?: number | null
+  locationConfirmedManually?: boolean
+  confirmationRequired?: boolean
+  coverageMatches: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  coverageMatchCount?: number
+  coverageConfigured?: boolean
+  coverageSnapshotBuiltAt?: Date | string | null
+  networkReferenceStatus: string
+  networkReference?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  networkAlternatives: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  networkSearchRadiusMeters?: number | null
+  requestId?: string | null
+  source?: string | null
+  errorCode?: string | null
+  user?: Prisma.UserCreateNestedOneWithoutViabilityConsultationsInput
+  coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchCreateNestedManyWithoutConsultationInput
+}
+
+export type ViabilityConsultationUncheckedCreateWithoutReviewInput = {
+  id?: string
+  protocol: string
+  userId?: string | null
+  status: string
+  resultMessage: string
+  createdAt?: Date | string
+  completedAt?: Date | string | null
+  durationMs?: number | null
+  postalCode?: string | null
+  street: string
+  number: string
+  complement?: string | null
+  neighborhood?: string | null
+  city: string
+  state: string
+  geocodingProvider: string
+  geocodedAddress?: string | null
+  geocodingConfidence?: string | null
+  geocodingLocationType?: string | null
+  geocodingPartialMatch?: boolean
+  geocodedLatitude?: number | null
+  geocodedLongitude?: number | null
+  confirmedLatitude?: number | null
+  confirmedLongitude?: number | null
+  locationConfirmedManually?: boolean
+  confirmationRequired?: boolean
+  coverageMatches: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  coverageMatchCount?: number
+  coverageConfigured?: boolean
+  coverageSnapshotBuiltAt?: Date | string | null
+  networkReferenceStatus: string
+  networkReference?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  networkAlternatives: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  networkSearchRadiusMeters?: number | null
+  requestId?: string | null
+  source?: string | null
+  errorCode?: string | null
+  coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUncheckedCreateNestedManyWithoutConsultationInput
+}
+
+export type ViabilityConsultationCreateOrConnectWithoutReviewInput = {
+  where: Prisma.ViabilityConsultationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ViabilityConsultationCreateWithoutReviewInput, Prisma.ViabilityConsultationUncheckedCreateWithoutReviewInput>
+}
+
+export type ViabilityConsultationUpsertWithoutReviewInput = {
+  update: Prisma.XOR<Prisma.ViabilityConsultationUpdateWithoutReviewInput, Prisma.ViabilityConsultationUncheckedUpdateWithoutReviewInput>
+  create: Prisma.XOR<Prisma.ViabilityConsultationCreateWithoutReviewInput, Prisma.ViabilityConsultationUncheckedCreateWithoutReviewInput>
+  where?: Prisma.ViabilityConsultationWhereInput
+}
+
+export type ViabilityConsultationUpdateToOneWithWhereWithoutReviewInput = {
+  where?: Prisma.ViabilityConsultationWhereInput
+  data: Prisma.XOR<Prisma.ViabilityConsultationUpdateWithoutReviewInput, Prisma.ViabilityConsultationUncheckedUpdateWithoutReviewInput>
+}
+
+export type ViabilityConsultationUpdateWithoutReviewInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  protocol?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  resultMessage?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  geocodingProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  geocodedAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geocodingConfidence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geocodingLocationType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geocodingPartialMatch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  geocodedLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  geocodedLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  confirmedLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  confirmedLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  locationConfirmedManually?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  confirmationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverageMatches?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  coverageMatchCount?: Prisma.IntFieldUpdateOperationsInput | number
+  coverageConfigured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverageSnapshotBuiltAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  networkReferenceStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  networkReference?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  networkAlternatives?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  networkSearchRadiusMeters?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneWithoutViabilityConsultationsNestedInput
+  coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUpdateManyWithoutConsultationNestedInput
+}
+
+export type ViabilityConsultationUncheckedUpdateWithoutReviewInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  protocol?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  resultMessage?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  street?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  complement?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  neighborhood?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  geocodingProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  geocodedAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geocodingConfidence?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geocodingLocationType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  geocodingPartialMatch?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  geocodedLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  geocodedLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  confirmedLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  confirmedLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  locationConfirmedManually?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  confirmationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverageMatches?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  coverageMatchCount?: Prisma.IntFieldUpdateOperationsInput | number
+  coverageConfigured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverageSnapshotBuiltAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  networkReferenceStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  networkReference?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  networkAlternatives?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  networkSearchRadiusMeters?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUncheckedUpdateManyWithoutConsultationNestedInput
 }
 
 export type ViabilityConsultationCreateManyUserInput = {
@@ -1573,6 +1780,7 @@ export type ViabilityConsultationUpdateWithoutUserInput = {
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUpdateManyWithoutConsultationNestedInput
+  review?: Prisma.ViabilityReviewUpdateOneWithoutConsultationNestedInput
 }
 
 export type ViabilityConsultationUncheckedUpdateWithoutUserInput = {
@@ -1613,6 +1821,7 @@ export type ViabilityConsultationUncheckedUpdateWithoutUserInput = {
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   errorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverageMatchProjections?: Prisma.ViabilityConsultationCoverageMatchUncheckedUpdateManyWithoutConsultationNestedInput
+  review?: Prisma.ViabilityReviewUncheckedUpdateOneWithoutConsultationNestedInput
 }
 
 export type ViabilityConsultationUncheckedUpdateManyWithoutUserInput = {
@@ -1725,6 +1934,7 @@ export type ViabilityConsultationSelect<ExtArgs extends runtime.Types.Extensions
   errorCode?: boolean
   user?: boolean | Prisma.ViabilityConsultation$userArgs<ExtArgs>
   coverageMatchProjections?: boolean | Prisma.ViabilityConsultation$coverageMatchProjectionsArgs<ExtArgs>
+  review?: boolean | Prisma.ViabilityConsultation$reviewArgs<ExtArgs>
   _count?: boolean | Prisma.ViabilityConsultationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["viabilityConsultation"]>
 
@@ -1854,6 +2064,7 @@ export type ViabilityConsultationOmit<ExtArgs extends runtime.Types.Extensions.I
 export type ViabilityConsultationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.ViabilityConsultation$userArgs<ExtArgs>
   coverageMatchProjections?: boolean | Prisma.ViabilityConsultation$coverageMatchProjectionsArgs<ExtArgs>
+  review?: boolean | Prisma.ViabilityConsultation$reviewArgs<ExtArgs>
   _count?: boolean | Prisma.ViabilityConsultationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ViabilityConsultationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1868,6 +2079,7 @@ export type $ViabilityConsultationPayload<ExtArgs extends runtime.Types.Extensio
   objects: {
     user: Prisma.$UserPayload<ExtArgs> | null
     coverageMatchProjections: Prisma.$ViabilityConsultationCoverageMatchPayload<ExtArgs>[]
+    review: Prisma.$ViabilityReviewPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2303,6 +2515,7 @@ export interface Prisma__ViabilityConsultationClient<T, Null = never, ExtArgs ex
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.ViabilityConsultation$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ViabilityConsultation$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   coverageMatchProjections<T extends Prisma.ViabilityConsultation$coverageMatchProjectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ViabilityConsultation$coverageMatchProjectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ViabilityConsultationCoverageMatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  review<T extends Prisma.ViabilityConsultation$reviewArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ViabilityConsultation$reviewArgs<ExtArgs>>): Prisma.Prisma__ViabilityReviewClient<runtime.Types.Result.GetResult<Prisma.$ViabilityReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2810,6 +3023,25 @@ export type ViabilityConsultation$coverageMatchProjectionsArgs<ExtArgs extends r
   take?: number
   skip?: number
   distinct?: Prisma.ViabilityConsultationCoverageMatchScalarFieldEnum | Prisma.ViabilityConsultationCoverageMatchScalarFieldEnum[]
+}
+
+/**
+ * ViabilityConsultation.review
+ */
+export type ViabilityConsultation$reviewArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ViabilityReview
+   */
+  select?: Prisma.ViabilityReviewSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ViabilityReview
+   */
+  omit?: Prisma.ViabilityReviewOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ViabilityReviewInclude<ExtArgs> | null
+  where?: Prisma.ViabilityReviewWhereInput
 }
 
 /**
