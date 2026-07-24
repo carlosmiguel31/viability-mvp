@@ -346,3 +346,123 @@ export interface ConsultationListParams {
   page?: number;
   sortOrder?: "asc" | "desc";
 }
+
+// ── Dashboard (v0.5.0) ───────────────────────────────────────
+export type DashboardPreset =
+  | "TODAY"
+  | "LAST_7_DAYS"
+  | "LAST_30_DAYS"
+  | "CURRENT_MONTH"
+  | "PREVIOUS_MONTH"
+  | "CUSTOM";
+
+export interface DashboardFilters {
+  preset?: DashboardPreset;
+  dateFrom?: string;
+  dateTo?: string;
+  userId?: string;
+  status?: string;
+  city?: string;
+  state?: string;
+  partnerCode?: string;
+  layerId?: string;
+}
+
+export interface DashboardSummary {
+  period: { dateFrom: string; dateTo: string; timeZone: string };
+  totals: {
+    consultations: number;
+    preliminarilyViable: number;
+    outsideCoverage: number;
+    addressAmbiguous: number;
+    coverageNotConfigured: number;
+    geocodingFailed: number;
+    otherStatuses: number;
+  };
+  rates: {
+    coverageRate: number;
+    networkReferenceFoundRate: number;
+    manualConfirmationRate: number;
+    geocodingHighConfidenceRate: number;
+  };
+  performance: {
+    averageDurationMs: number;
+    medianDurationMs: number;
+    p95DurationMs: number;
+  };
+  comparison: {
+    previousPeriod: { dateFrom: string; dateTo: string };
+    consultationsChangePercent: number | null;
+    coverageRateChangePercentagePoints: number | null;
+    averageDurationChangePercent: number | null;
+  };
+}
+
+export interface DashboardTimelinePoint {
+  period: string;
+  total: number;
+  preliminarilyViable: number;
+  outsideCoverage: number;
+  addressAmbiguous: number;
+}
+
+export interface DashboardTimeline {
+  granularity: "DAY" | "WEEK" | "MONTH";
+  points: DashboardTimelinePoint[];
+}
+
+export interface DashboardBreakdowns {
+  byStatus: Array<{ status: string; count: number; percentage: number }>;
+  byNetworkReferenceStatus: Array<{ status: string; count: number; percentage: number }>;
+  byGeocodingConfidence: Array<{ confidence: string; count: number; percentage: number }>;
+  byGeocodingLocationType: Array<{ locationType: string; count: number; percentage: number }>;
+}
+
+export interface DashboardRankings {
+  partners: Array<{
+    partnerCode: string | null;
+    partnerName: string;
+    matchCount: number;
+    consultationCount: number;
+  }>;
+  layers: Array<{
+    layerId: string | null;
+    layerName: string;
+    partnerName: string;
+    version: string | null;
+    matchCount: number;
+    consultationCount: number;
+  }>;
+  users: Array<{ userId: string; name: string; email: string; consultationCount: number }>;
+  cities: Array<{
+    city: string;
+    state: string;
+    consultationCount: number;
+    preliminarilyViableCount: number;
+    coverageRate: number;
+  }>;
+}
+
+export interface DashboardRecentConsultation {
+  id: string;
+  protocol: string;
+  status: string;
+  address: {
+    street: string;
+    number: string;
+    neighborhood: string | null;
+    city: string;
+    state: string;
+  };
+  user: { id: string; name: string } | null;
+  coverageMatchCount: number;
+  networkReferenceStatus: string;
+  createdAt: string;
+  durationMs: number | null;
+}
+
+export interface DashboardUserOption {
+  id: string;
+  name: string;
+  email: string;
+}

@@ -56,7 +56,8 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   CoveragePartner: 'CoveragePartner',
   CoverageLayer: 'CoverageLayer',
-  ViabilityConsultation: 'ViabilityConsultation'
+  ViabilityConsultation: 'ViabilityConsultation',
+  ViabilityConsultationCoverageMatch: 'ViabilityConsultationCoverageMatch'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -201,6 +202,21 @@ export const ViabilityConsultationScalarFieldEnum = {
 } as const
 
 export type ViabilityConsultationScalarFieldEnum = (typeof ViabilityConsultationScalarFieldEnum)[keyof typeof ViabilityConsultationScalarFieldEnum]
+
+
+export const ViabilityConsultationCoverageMatchScalarFieldEnum = {
+  id: 'id',
+  consultationId: 'consultationId',
+  partnerIdSnapshot: 'partnerIdSnapshot',
+  partnerNameSnapshot: 'partnerNameSnapshot',
+  partnerCodeSnapshot: 'partnerCodeSnapshot',
+  layerIdSnapshot: 'layerIdSnapshot',
+  layerNameSnapshot: 'layerNameSnapshot',
+  versionSnapshot: 'versionSnapshot',
+  createdAt: 'createdAt'
+} as const
+
+export type ViabilityConsultationCoverageMatchScalarFieldEnum = (typeof ViabilityConsultationCoverageMatchScalarFieldEnum)[keyof typeof ViabilityConsultationCoverageMatchScalarFieldEnum]
 
 
 export const SortOrder = {

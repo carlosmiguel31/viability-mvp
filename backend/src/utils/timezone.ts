@@ -60,3 +60,28 @@ export function nextCalendarDay(date: string): string {
   next.setUTCDate(next.getUTCDate() + 1);
   return next.toISOString().slice(0, 10);
 }
+
+/** Data de calendario (AAAA-MM-DD) de um instante no fuso informado. */
+export function calendarDateInTimeZone(instant: Date, timeZone: string): string {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return formatter.format(instant); // en-CA => YYYY-MM-DD
+}
+
+/** Soma dias de calendario a AAAA-MM-DD (sem fuso). */
+export function addCalendarDays(date: string, days: number): string {
+  const value = new Date(`${date}T12:00:00Z`);
+  value.setUTCDate(value.getUTCDate() + days);
+  return value.toISOString().slice(0, 10);
+}
+
+/** Diferenca em dias de calendario entre duas datas AAAA-MM-DD (b - a). */
+export function calendarDaysBetween(a: string, b: string): number {
+  const start = Date.parse(`${a}T00:00:00Z`);
+  const end = Date.parse(`${b}T00:00:00Z`);
+  return Math.round((end - start) / (24 * 60 * 60 * 1000));
+}

@@ -15,6 +15,13 @@ import {
   CoverageReloadSummary,
   CoverageStatus,
   ConsultationDetail,
+  DashboardBreakdowns,
+  DashboardFilters,
+  DashboardRankings,
+  DashboardRecentConsultation,
+  DashboardSummary,
+  DashboardTimeline,
+  DashboardUserOption,
   ConsultationListParams,
   ConsultationsPage,
   GeographicCoordinate,
@@ -334,4 +341,67 @@ export async function exportConsultations(params: ConsultationListParams): Promi
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+// ── Dashboard (v0.5.0) ────────────────────────────────────────
+function dashboardQuery(filters: DashboardFilters & { limit?: number }): string {
+  const query = new URLSearchParams();
+  // Parametros vazios nao sao enviados.
+  if (filters.preset) query.set("preset", filters.preset);
+  if (filters.dateFrom) query.set("dateFrom", filters.dateFrom);
+  if (filters.dateTo) query.set("dateTo", filters.dateTo);
+  if (filters.userId) query.set("userId", filters.userId);
+  if (filters.status) query.set("status", filters.status);
+  if (filters.city) query.set("city", filters.city);
+  if (filters.state) query.set("state", filters.state);
+  if (filters.partnerCode) query.set("partnerCode", filters.partnerCode);
+  if (filters.layerId) query.set("layerId", filters.layerId);
+  if (filters.limit) query.set("limit", String(filters.limit));
+  const text = query.toString();
+  return text ? `?${text}` : "";
+}
+
+export function getDashboardSummary(
+  filters: DashboardFilters,
+  options?: { recordView?: boolean }
+): Promise<DashboardSummary> {
+  // recordView=true SOMENTE na primeira abertura e a cada Aplicar explícito;
+  // retries/StrictMode/Tentar novamente não registram visualização.
+  const query = dashboardQuery(filters);
+  const suffix = options?.recordView
+    ? `${query ? `${query}&` : "?"}recordView=true`
+    : query;
+  return apiJson<DashboardSummary>(`/api/dashboard/summary${suffix}`);
+}
+
+/** Opções mínimas de usuários (ativos) para o filtro — ADMIN/OPERATOR/TECHNICIAN. */
+export function getDashboardUserOptions(params?: {
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ users: DashboardUserOption[]; total: number; page: number; limit: number }> {
+  const query = new URLSearchParams();
+  if (params?.search) query.set("search", params.search);
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+  const text = query.toString();
+  return apiJson(`/api/dashboard/users${text ? `?${text}` : ""}`);
+}
+
+export function getDashboardTimeline(filters: DashboardFilters): Promise<DashboardTimeline> {
+  return apiJson<DashboardTimeline>(`/api/dashboard/timeline${dashboardQuery(filters)}`);
+}
+
+export function getDashboardBreakdowns(filters: DashboardFilters): Promise<DashboardBreakdowns> {
+  return apiJson<DashboardBreakdowns>(`/api/dashboard/breakdowns${dashboardQuery(filters)}`);
+}
+
+export function getDashboardRankings(filters: DashboardFilters): Promise<DashboardRankings> {
+  return apiJson<DashboardRankings>(`/api/dashboard/rankings${dashboardQuery(filters)}`);
+}
+
+export function getDashboardRecentConsultations(
+  filters: DashboardFilters & { limit?: number }
+): Promise<{ consultations: DashboardRecentConsultation[] }> {
+  return apiJson(`/api/dashboard/recent-consultations${dashboardQuery(filters)}`);
 }

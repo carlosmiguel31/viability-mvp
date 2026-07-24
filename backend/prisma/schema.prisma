@@ -207,6 +207,8 @@ model ViabilityConsultation {
   source    String?
   errorCode String?
 
+  coverageMatchProjections ViabilityConsultationCoverageMatch[] @relation("ConsultationCoverageMatches")
+
   @@index([createdAt])
   @@index([userId])
   @@index([status])
@@ -215,4 +217,29 @@ model ViabilityConsultation {
   @@index([state])
   @@index([networkReferenceStatus])
   @@map("viability_consultations")
+}
+
+/// Projecao relacional IMUTAVEL dos coverageMatches de cada consulta
+/// (v0.5.0). Permite agregacoes eficientes por parceiro/camada no dashboard
+/// sem varrer o Json. Snapshot puro: SEM foreign key para CoveragePartner ou
+/// CoverageLayer (que podem ser renomeados/excluidos sem afetar o historico).
+/// O Json coverageMatches original permanece intacto para os detalhes.
+model ViabilityConsultationCoverageMatch {
+  id                  String                @id @default(uuid()) @db.Uuid
+  consultationId      String                @db.Uuid
+  consultation        ViabilityConsultation @relation("ConsultationCoverageMatches", fields: [consultationId], references: [id], onDelete: Cascade)
+  partnerIdSnapshot   String?
+  partnerNameSnapshot String
+  partnerCodeSnapshot String?
+  layerIdSnapshot     String?
+  layerNameSnapshot   String
+  versionSnapshot     String?
+  createdAt           DateTime              @default(now())
+
+  @@unique([consultationId, layerIdSnapshot])
+  @@index([consultationId])
+  @@index([partnerCodeSnapshot])
+  @@index([layerIdSnapshot])
+  @@index([createdAt])
+  @@map("viability_consultation_coverage_matches")
 }

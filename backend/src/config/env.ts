@@ -47,6 +47,9 @@ const envSchema = z
       .string()
       .default("America/Sao_Paulo")
       .refine(isValidIanaTimeZone, "CONSULTATION_TIME_ZONE deve ser um fuso IANA válido."),
+    /** Dashboard (v0.5.0). */
+    DASHBOARD_MAX_RANGE_DAYS: z.coerce.number().int().positive().default(730),
+
     /** Assinatura dos tokens de confirmacao de localizacao (>= 32 chars). */
     LOCATION_CONFIRMATION_SECRET: z
       .string()

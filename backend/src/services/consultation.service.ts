@@ -135,9 +135,28 @@ export async function persistConsultation(input: PersistInput): Promise<Consulta
   for (let attempt = 0; attempt < MAX_PROTOCOL_ATTEMPTS; attempt += 1) {
     const protocol = generateProtocol();
     try {
-      const created = await prisma.viabilityConsultation.create({
-        data: { ...data, protocol },
-        select: { id: true, protocol: true, createdAt: true },
+      // Consulta + projecoes relacionais dos matches na MESMA transacao:
+      // uma falha nao deixa a consulta parcialmente persistida.
+      const created = await prisma.$transaction(async (tx) => {
+        const consultation = await tx.viabilityConsultation.create({
+          data: { ...data, protocol },
+          select: { id: true, protocol: true, createdAt: true },
+        });
+        if (coverageMatches.length > 0) {
+          await tx.viabilityConsultationCoverageMatch.createMany({
+            data: coverageMatches.map((match) => ({
+              consultationId: consultation.id,
+              partnerIdSnapshot: match.partnerId,
+              partnerNameSnapshot: match.partnerName,
+              partnerCodeSnapshot: match.partnerCode,
+              layerIdSnapshot: match.layerId,
+              layerNameSnapshot: match.layerName,
+              versionSnapshot: match.version,
+              createdAt: consultation.createdAt,
+            })),
+          });
+        }
+        return consultation;
       });
       await recordAudit({
         userId: input.userId,

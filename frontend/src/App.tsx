@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import LoginPage from "./components/LoginPage";
 import ConsultaPage from "./components/ConsultaPage";
+import DashboardPage from "./components/DashboardPage";
 import UsersPage from "./components/UsersPage";
 import ChangePasswordForm from "./components/ChangePasswordForm";
 import AuditPage from "./components/AuditPage";
@@ -10,9 +11,10 @@ import { logout, onSessionChange, restoreSession, SessionUser } from "./auth";
 import { fetchCoverageStatus } from "./api";
 import { CoverageStatus, ROLE_LABELS } from "./types";
 
-type View = "consulta" | "historico" | "coberturas" | "usuarios" | "auditoria" | "senha";
+type View = "dashboard" | "consulta" | "historico" | "coberturas" | "usuarios" | "auditoria" | "senha";
 
 const MENU: Array<{ view: View; label: string; adminOnly: boolean }> = [
+  { view: "dashboard", label: "Dashboard", adminOnly: false },
   { view: "consulta", label: "Nova consulta", adminOnly: false },
   { view: "historico", label: "Histórico", adminOnly: false },
   { view: "coberturas", label: "Coberturas", adminOnly: true },
@@ -34,7 +36,7 @@ export function coverageHeaderText(coverage: CoverageStatus | null): string {
 export default function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [restoring, setRestoring] = useState(true);
-  const [view, setView] = useState<View>("consulta");
+  const [view, setView] = useState<View>("dashboard");
   const [coverage, setCoverage] = useState<CoverageStatus | null>(null);
 
   // Sessão reativa: login/logout/expiração em qualquer ponto refletem aqui.
@@ -55,7 +57,7 @@ export default function App() {
 
   useEffect(() => {
     if (!user) {
-      setView("consulta");
+      setView("dashboard");
       setCoverage(null);
       return;
     }
@@ -129,6 +131,7 @@ export default function App() {
         </nav>
 
         <main className="min-w-0 flex-1">
+          {view === "dashboard" && <DashboardPage currentUser={user} />}
           {view === "consulta" && <ConsultaPage />}
           {view === "historico" && <ConsultationHistoryPage currentUser={user} />}
           {view === "senha" && <ChangePasswordForm />}

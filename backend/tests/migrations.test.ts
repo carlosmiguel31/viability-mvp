@@ -37,7 +37,7 @@ describe("migrations em banco limpo", () => {
         .filter((entry) => entry.isDirectory())
         .map((entry) => entry.name)
         .sort();
-      expect(folders.length).toBeGreaterThanOrEqual(4);
+      expect(folders.length).toBeGreaterThanOrEqual(5);
       for (const folder of folders) {
         const sql = readFileSync(path.join(MIGRATIONS_DIR, folder, "migration.sql"), "utf-8");
         await fresh.query(sql); // qualquer erro derruba o teste
@@ -53,6 +53,7 @@ describe("migrations em banco limpo", () => {
         "coverage_partners",
         "coverage_layers",
         "viability_consultations",
+        "viability_consultation_coverage_matches",
       ]) {
         expect(names).toContain(expected);
       }

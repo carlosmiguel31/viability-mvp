@@ -562,16 +562,165 @@ exclusão física de usuários (ativo/inativo), e-mails são únicos ignorando
 maiúsculas, o último ADMIN ativo não pode ser rebaixado nem inativado e a
 auto-inativação exige confirmação explícita.
 
-### Auditoria
+#
+## Dashboard operacional (v0.5.0)
+
+Dashboard analítico e **somente leitura**, derivado exclusivamente das
+consultas persistidas em `ViabilityConsultation`. Nenhuma consulta histórica é
+alterada. É a tela inicial após o login.
+
+### Endpoints (todos autenticados; nenhum público)
+
+| Endpoint | Conteúdo |
+| --- | --- |
+| `GET /api/dashboard/summary` | Totais, taxas, desempenho e comparação com o período anterior |
+| `GET /api/dashboard/timeline` | Evolução temporal (DAY/WEEK/MONTH) |
+| `GET /api/dashboard/breakdowns` | Distribuições por status, referência, confiança e locationType |
+| `GET /api/dashboard/rankings` | Parceiros, camadas, cidades e usuários (limit padrão 10, máx. 25) |
+| `GET /api/dashboard/recent-consultations` | Resumo das consultas recentes (limit padrão 10, máx. 20) |
+
+Rate limit próprio (60 req/min por origem), compatível com o uso normal
+(5 endpoints por aplicação de filtros).
+
+### Permissões (escopo aplicado no backend)
+
+- **ADMIN / OPERATOR / TECHNICIAN**: indicadores de todos os usuários, filtro
+  por usuário (na tela, para os três perfis), parceiros, camadas e desempenho.
+  As opções do filtro vêm de `GET /api/dashboard/users` — endpoint somente
+  leitura que retorna apenas usuários **ativos** com `id`, `name` e `email`
+  (com `search`, paginação, `limit` padrão 50/máx. 100 e ordenação por nome);
+  VIEWER recebe 403. O `/api/users` administrativo segue **exclusivo de
+  ADMIN**.
+- **VIEWER**: somente indicadores derivados das **próprias** consultas; não
+  recebe ranking de usuários nem nomes/e-mails de terceiros; o parâmetro
+  `userId` é ignorado (o escopo prevalece).
+
+### Filtros e período
+
+Parâmetros comuns: `preset`, `dateFrom`, `dateTo`, `userId`, `status`, `city`,
+`state`, `partnerCode`, `layerId`. Presets: `TODAY`, `LAST_7_DAYS`,
+`LAST_30_DAYS` (padrão), `CURRENT_MONTH`, `PREVIOUS_MONTH`, `CUSTOM` (exige as
+duas datas). As datas seguem a mesma interpretação de fuso do histórico
+(`CONSULTATION_TIME_ZONE`): início do dia local, fim exclusivo do dia seguinte
+local, conversão para UTC somente antes do banco. Período máximo:
+`DASHBOARD_MAX_RANGE_DAYS` (padrão 730 dias).
+
+### Filtro de parceiro/camada nos rankings
+
+`partnerCode`/`layerId` selecionam as consultas que possuam o parceiro/camada
+(summary, timeline, breakdowns, recentes, cidades e usuários) e, nos rankings
+de **parceiros e camadas**, restringem também as próprias linhas de match: com
+matches sobrepostos (Parceiro A + Parceiro B na mesma consulta), o filtro
+`partnerCode=A` conta a consulta uma vez e lista somente A e as camadas de A —
+B nunca aparece.
+
+### Fórmulas das métricas
+
+- `coverageRate = preliminarilyViable / (preliminarilyViable + outsideCoverage)`
+  — `ADDRESS_AMBIGUOUS`, `COVERAGE_NOT_CONFIGURED` e falhas de geocodificação
+  ficam **fora do denominador** (sem conclusão geográfica confiável).
+  Denominador zero ⇒ `0`.
+- `networkReferenceFoundRate = FOUND / consultas com tentativa real de busca`
+  (`NOT_CHECKED` fora do denominador).
+- `manualConfirmationRate = locationConfirmedManually / total de consultas`.
+- `geocodingHighConfidenceRate = HIGH / consultas com confiança preenchida`.
+- `averageDurationMs`, `medianDurationMs` (p50) e `p95DurationMs` usam apenas
+  `durationMs` não nulos, calculados no PostgreSQL (`PERCENTILE_CONT`).
+- `geocodingFailed` agrega os status de falha de geocodificação existentes
+  (`ADDRESS_NOT_FOUND` e `GEOCODING_UNAVAILABLE`).
+
+### Comparação com o período anterior
+
+O período anterior tem a mesma quantidade de dias e termina imediatamente
+antes do início do atual. Consultas e duração são comparadas em percentual;
+taxa de cobertura em **pontos percentuais**. Valor anterior zero ⇒ `null`
+(nunca `Infinity`/`NaN`). O arredondamento é feito apenas no frontend (1 casa).
+
+### Timeline
+
+Granularidade automática: até 45 dias `DAY`; 46–180 `WEEK` (semanas ISO,
+rótulo = segunda-feira); acima de 180 `MONTH` (rótulo `AAAA-MM`). O
+agrupamento converte `createdAt` para o fuso configurado antes do
+`date_trunc` (nunca UTC puro); períodos sem consultas aparecem com zero, em
+ordem cronológica.
+
+### Projeção relacional dos matches e backfill
+
+`ViabilityConsultationCoverageMatch` é uma projeção **imutável** dos
+`coverageMatches` (Json) de cada consulta, com snapshots de parceiro/camada e
+**sem** foreign key para `CoveragePartner`/`CoverageLayer` — renomear ou
+excluir parceiros/camadas não altera o histórico. Índices em
+`consultationId`, `partnerCodeSnapshot`, `layerIdSnapshot` e `createdAt`;
+unique `(consultationId, layerIdSnapshot)` com `NULLS NOT DISTINCT` impede
+duplicação. A projeção é gravada **na mesma transação** da consulta. A
+migration `20260724000000_consultation_coverage_matches` faz o backfill dos
+Json existentes (ignora itens inválidos, não duplica em reexecução e não
+altera o Json original, mantido por compatibilidade).
+
+### Privacidade
+
+O dashboard nunca expõe coordenadas, número/complemento em rankings, CEP,
+conteúdo bruto do Google, tokens, caminhos de arquivo, `storedFileName`,
+stack traces, SQL ou host do Voalle. Rankings retornam apenas
+cidade/UF e snapshots de parceiro/camada. A auditoria registra **um** evento
+`DASHBOARD_VIEWED` por visualização lógica: o frontend envia
+`recordView=true` no `summary` apenas na primeira abertura e a cada clique em
+Aplicar com novos filtros (chave estável em `useRef`, imune à duplicação do
+React.StrictMode); retries, "Tentar novamente" e os demais endpoints não
+geram evento. Metadados seguros apenas (preset, datas, filtros e escopo —
+nunca endereços ou agregados). Falhas inesperadas de banco/agregação nos seis
+endpoints do dashboard respondem `DASHBOARD_QUERY_FAILED` (500) com mensagem
+neutra — sem SQL, stack trace ou mensagem interna do PostgreSQL; os erros de
+validação mantêm seus códigos específicos.
+
+### Eventos de auditoria (resumo)
+
+Consultas de viabilidade geram `VIABILITY_CONSULTATION_CREATED`; exportações
+CSV geram `VIABILITY_CONSULTATION_EXPORT_REQUESTED`; o dashboard gera
+`DASHBOARD_VIEWED`; parceiros e camadas possuem eventos administrativos
+próprios (criação, atualização, ativação/inativação, exclusão e upload — o
+upload de KML/KMZ pela API já está implementado).
+
+### Códigos de erro
+
+`DASHBOARD_INVALID_DATE_RANGE`, `DASHBOARD_DATE_RANGE_TOO_LARGE`,
+`DASHBOARD_INVALID_FILTER`, `DASHBOARD_QUERY_FAILED`.
+
+### Cache
+
+Não foi implementado cache (nem Redis): as agregações rodam no PostgreSQL com
+índices dedicados e ficaram eficientes; por isso `DASHBOARD_CACHE_TTL_SECONDS`
+não existe no `.env.example`.
+
+### Como testar
+
+`cd backend && npm test` cobre períodos/fusos, escopos por perfil, fórmulas,
+timeline, breakdowns, rankings, projeção transacional, imutabilidade de
+snapshots e o backfill da migration (em banco recém-criado). `cd frontend &&
+npm test` cobre a página com mocks da API (sem backend real).
+
+## Auditoria
 
 Ações registradas no banco da aplicação: `LOGIN_SUCCESS`, `LOGIN_FAILED`,
 `LOGOUT`, `USER_CREATED`, `USER_UPDATED`, `USER_ACTIVATED`,
 `USER_DEACTIVATED`, `USER_ROLE_CHANGED`, `USER_PASSWORD_RESET`,
-`COVERAGE_RELOADED`. A trilha nunca guarda senhas, hashes, tokens, chaves,
-credenciais do Voalle nem endereços completos, e é acessível apenas por
-ADMIN em `GET /api/audit-logs` (paginação e filtros por usuário, ação e
-intervalo de datas). Consultas de viabilidade não são auditadas nesta
-versão.
+`COVERAGE_RELOADED`, os eventos administrativos de parceiros e camadas de
+cobertura (criação, atualização, ativação/inativação, exclusão e upload de
+KML/KMZ), e ainda:
+
+- **`VIABILITY_CONSULTATION_CREATED`** — registrado a cada consulta de
+  viabilidade persistida no histórico (com o protocolo, nunca o endereço
+  completo);
+- **`VIABILITY_CONSULTATION_EXPORT_REQUESTED`** — registrado a cada
+  exportação CSV do histórico;
+- **`DASHBOARD_VIEWED`** — registrado uma vez por visualização lógica do
+  dashboard (abertura inicial e aplicação de filtros);
+- **`CONSULTATION_CLEANUP_EXECUTED`** — registrado pela rotina de retenção.
+
+A trilha nunca guarda senhas, hashes, tokens, chaves, credenciais do Voalle
+nem endereços completos, e é acessível apenas por ADMIN em
+`GET /api/audit-logs` (paginação e filtros por usuário, ação e intervalo de
+datas).
 
 ### Migração da chave compartilhada (0.1.x → 0.2.0)
 
@@ -672,18 +821,27 @@ disponibilidade estimada, clientes conectados, CPF, CNPJ ou telefone.
   API se aplicam; o provider `dev` serve apenas para desenvolvimento.
 - A análise continua sendo preliminar: identificadores exibidos dependem da
   qualidade do cadastro no Voalle.
-- Upload de arquivo via API não implementado — leitura pelo caminho do `.env`.
 - Point-in-polygon planar (ray casting) — adequado para manchas municipais;
   não trata polígonos que cruzam o antimeridiano.
 - Agrupamento apenas por coordenada exatamente igual (7 casas); pontos
   ligeiramente divergentes aparecem separados.
 - Ocupação/disponibilidade de portas não é consultada nem exibida.
 - Sem recuperação de senha self-service: a redefinição é feita por um ADMIN.
-- Sem histórico persistente de consultas, upload de KML/KMZ pela interface
-  ou gerenciamento de múltiplas redes (planejados para versões futuras).
 - Cookie de refresh com `SameSite=Strict` pressupõe frontend e API na mesma
   origem (ou atrás do mesmo proxy reverso).
 - O resultado é sempre preliminar e requer validação técnica.
+- Dashboard sem cache em memória (decisão documentada: agregações eficientes
+  no PostgreSQL); o índice único da projeção usa `NULLS NOT DISTINCT`
+  (PostgreSQL 15+).
+
+Recursos das versões 0.3.0–0.5.0 que deixaram de ser limitações: **histórico
+persistente e imutável com protocolos** (`VIA-AAAAMMDD-XXXXXXXX`),
+**parceiros e múltiplas camadas de cobertura** (gerenciamento completo),
+**upload de KML/KMZ pela interface e pela API** (multipart em
+`POST /api/coverage/layers`, com validação e snapshot atômico) e o
+**dashboard operacional** com endpoint dedicado `GET /api/dashboard/users`
+(opções de usuários ativos para ADMIN, OPERATOR e TECHNICIAN; VIEWER recebe
+403 — o `/api/users` administrativo segue exclusivo de ADMIN).
 
 ## Histórico de consultas (v0.4.0)
 

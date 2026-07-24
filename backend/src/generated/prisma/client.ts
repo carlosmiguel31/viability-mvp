@@ -77,3 +77,12 @@ export type CoverageLayer = Prisma.CoverageLayerModel
  * storedFileName nem poligonos.
  */
 export type ViabilityConsultation = Prisma.ViabilityConsultationModel
+/**
+ * Model ViabilityConsultationCoverageMatch
+ * Projecao relacional IMUTAVEL dos coverageMatches de cada consulta
+ * (v0.5.0). Permite agregacoes eficientes por parceiro/camada no dashboard
+ * sem varrer o Json. Snapshot puro: SEM foreign key para CoveragePartner ou
+ * CoverageLayer (que podem ser renomeados/excluidos sem afetar o historico).
+ * O Json coverageMatches original permanece intacto para os detalhes.
+ */
+export type ViabilityConsultationCoverageMatch = Prisma.ViabilityConsultationCoverageMatchModel

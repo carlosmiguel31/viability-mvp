@@ -402,7 +402,8 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   CoveragePartner: 'CoveragePartner',
   CoverageLayer: 'CoverageLayer',
-  ViabilityConsultation: 'ViabilityConsultation'
+  ViabilityConsultation: 'ViabilityConsultation',
+  ViabilityConsultationCoverageMatch: 'ViabilityConsultationCoverageMatch'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "auditLog" | "coveragePartner" | "coverageLayer" | "viabilityConsultation"
+    modelProps: "user" | "refreshToken" | "auditLog" | "coveragePartner" | "coverageLayer" | "viabilityConsultation" | "viabilityConsultationCoverageMatch"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -866,6 +867,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ViabilityConsultationCoverageMatch: {
+      payload: Prisma.$ViabilityConsultationCoverageMatchPayload<ExtArgs>
+      fields: Prisma.ViabilityConsultationCoverageMatchFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ViabilityConsultationCoverageMatchFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ViabilityConsultationCoverageMatchFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>
+        }
+        findFirst: {
+          args: Prisma.ViabilityConsultationCoverageMatchFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ViabilityConsultationCoverageMatchFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>
+        }
+        findMany: {
+          args: Prisma.ViabilityConsultationCoverageMatchFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>[]
+        }
+        create: {
+          args: Prisma.ViabilityConsultationCoverageMatchCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>
+        }
+        createMany: {
+          args: Prisma.ViabilityConsultationCoverageMatchCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ViabilityConsultationCoverageMatchCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>[]
+        }
+        delete: {
+          args: Prisma.ViabilityConsultationCoverageMatchDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>
+        }
+        update: {
+          args: Prisma.ViabilityConsultationCoverageMatchUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>
+        }
+        deleteMany: {
+          args: Prisma.ViabilityConsultationCoverageMatchDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ViabilityConsultationCoverageMatchUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ViabilityConsultationCoverageMatchUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>[]
+        }
+        upsert: {
+          args: Prisma.ViabilityConsultationCoverageMatchUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ViabilityConsultationCoverageMatchPayload>
+        }
+        aggregate: {
+          args: Prisma.ViabilityConsultationCoverageMatchAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateViabilityConsultationCoverageMatch>
+        }
+        groupBy: {
+          args: Prisma.ViabilityConsultationCoverageMatchGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityConsultationCoverageMatchGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ViabilityConsultationCoverageMatchCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ViabilityConsultationCoverageMatchCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1031,6 +1106,21 @@ export const ViabilityConsultationScalarFieldEnum = {
 } as const
 
 export type ViabilityConsultationScalarFieldEnum = (typeof ViabilityConsultationScalarFieldEnum)[keyof typeof ViabilityConsultationScalarFieldEnum]
+
+
+export const ViabilityConsultationCoverageMatchScalarFieldEnum = {
+  id: 'id',
+  consultationId: 'consultationId',
+  partnerIdSnapshot: 'partnerIdSnapshot',
+  partnerNameSnapshot: 'partnerNameSnapshot',
+  partnerCodeSnapshot: 'partnerCodeSnapshot',
+  layerIdSnapshot: 'layerIdSnapshot',
+  layerNameSnapshot: 'layerNameSnapshot',
+  versionSnapshot: 'versionSnapshot',
+  createdAt: 'createdAt'
+} as const
+
+export type ViabilityConsultationCoverageMatchScalarFieldEnum = (typeof ViabilityConsultationCoverageMatchScalarFieldEnum)[keyof typeof ViabilityConsultationCoverageMatchScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1362,6 +1452,7 @@ export type GlobalOmitConfig = {
   coveragePartner?: Prisma.CoveragePartnerOmit
   coverageLayer?: Prisma.CoverageLayerOmit
   viabilityConsultation?: Prisma.ViabilityConsultationOmit
+  viabilityConsultationCoverageMatch?: Prisma.ViabilityConsultationCoverageMatchOmit
 }
 
 /* Types for Logging */
